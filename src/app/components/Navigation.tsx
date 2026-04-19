@@ -1,9 +1,11 @@
-import { Activity, BarChart3, Dumbbell, Apple, FolderOpen, Bot, LogOut } from "lucide-react";
-import { Button } from "./ui/button";
+import { Activity, BarChart3, Dumbbell, Apple, FolderOpen, Bot, LogOut } from 'lucide-react';
+import { Button } from './ui/button';
 
 interface NavigationProps {
   currentView: 'dashboard' | 'workout' | 'nutrition' | 'progress' | 'routines' | 'ai';
-  onViewChange: (view: 'dashboard' | 'workout' | 'nutrition' | 'progress' | 'routines' | 'ai') => void;
+  onViewChange: (
+    view: 'dashboard' | 'workout' | 'nutrition' | 'progress' | 'routines' | 'ai',
+  ) => void;
   onLogout: () => void;
   userName: string;
 }
@@ -81,9 +83,7 @@ export function Navigation({ currentView, onViewChange, onLogout, userName }: Na
                 key={item.id}
                 onClick={() => onViewChange(item.id)}
                 className={`flex flex-col items-center gap-1 py-2 px-1 rounded-lg transition-all ${
-                  isActive
-                    ? 'bg-emerald-500 text-white'
-                    : 'text-stone-400 active:bg-stone-800'
+                  isActive ? 'bg-emerald-500 text-white' : 'text-stone-400 active:bg-stone-800'
                 }`}
               >
                 <Icon className="w-5 h-5" />

@@ -1,6 +1,15 @@
-import { Card } from "./ui/card";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
-import { TrendingUp, TrendingDown, Minus } from "lucide-react";
+import { Card } from './ui/card';
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  Legend,
+} from 'recharts';
+import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
 
 interface DailyProgress {
   date: string;
@@ -17,12 +26,20 @@ interface ProgressTrackerProps {
   targetWeight?: number;
 }
 
-export function ProgressTracker({ dailyData, currentWeight, startWeight, targetWeight }: ProgressTrackerProps) {
+export function ProgressTracker({
+  dailyData,
+  currentWeight,
+  startWeight,
+  targetWeight,
+}: ProgressTrackerProps) {
   const weightChange = currentWeight - startWeight;
   const percentChange = ((weightChange / startWeight) * 100).toFixed(1);
-  
-  const targetProgress = targetWeight 
-    ? ((Math.abs(startWeight - currentWeight) / Math.abs(startWeight - targetWeight)) * 100).toFixed(0)
+
+  const targetProgress = targetWeight
+    ? (
+        (Math.abs(startWeight - currentWeight) / Math.abs(startWeight - targetWeight)) *
+        100
+      ).toFixed(0)
     : null;
 
   return (
@@ -38,9 +55,15 @@ export function ProgressTracker({ dailyData, currentWeight, startWeight, targetW
           <p className="text-sm text-gray-500 mb-2">Current Weight</p>
           <div className="flex items-center gap-2">
             <p className="text-3xl">{currentWeight} kg</p>
-            <div className={`flex items-center text-sm ${
-              weightChange < 0 ? 'text-green-600' : weightChange > 0 ? 'text-red-600' : 'text-gray-600'
-            }`}>
+            <div
+              className={`flex items-center text-sm ${
+                weightChange < 0
+                  ? 'text-green-600'
+                  : weightChange > 0
+                    ? 'text-red-600'
+                    : 'text-gray-600'
+              }`}
+            >
               {weightChange < 0 ? (
                 <TrendingDown className="w-4 h-4 mr-1" />
               ) : weightChange > 0 ? (
@@ -57,9 +80,7 @@ export function ProgressTracker({ dailyData, currentWeight, startWeight, targetW
           <Card className="p-6">
             <p className="text-sm text-gray-500 mb-2">Target Weight</p>
             <p className="text-3xl">{targetWeight} kg</p>
-            <p className="text-sm text-gray-600 mt-2">
-              {targetProgress}% to goal
-            </p>
+            <p className="text-sm text-gray-600 mt-2">{targetProgress}% to goal</p>
           </Card>
         )}
       </div>
@@ -72,27 +93,27 @@ export function ProgressTracker({ dailyData, currentWeight, startWeight, targetW
             <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
             <XAxis dataKey="date" stroke="#6b7280" />
             <YAxis stroke="#6b7280" domain={['dataMin - 2', 'dataMax + 2']} />
-            <Tooltip 
-              contentStyle={{ 
-                backgroundColor: 'white', 
+            <Tooltip
+              contentStyle={{
+                backgroundColor: 'white',
                 border: '1px solid #e5e7eb',
-                borderRadius: '8px'
-              }} 
+                borderRadius: '8px',
+              }}
             />
             <Legend />
-            <Line 
-              type="monotone" 
-              dataKey="weight" 
-              stroke="#8b5cf6" 
+            <Line
+              type="monotone"
+              dataKey="weight"
+              stroke="#8b5cf6"
               strokeWidth={3}
               dot={{ fill: '#8b5cf6', r: 4 }}
               name="Weight (kg)"
             />
             {targetWeight && (
-              <Line 
-                type="monotone" 
+              <Line
+                type="monotone"
                 dataKey={() => targetWeight}
-                stroke="#ef4444" 
+                stroke="#ef4444"
                 strokeWidth={2}
                 strokeDasharray="5 5"
                 dot={false}
@@ -112,37 +133,37 @@ export function ProgressTracker({ dailyData, currentWeight, startWeight, targetW
             <XAxis dataKey="date" stroke="#6b7280" />
             <YAxis yAxisId="left" stroke="#6b7280" />
             <YAxis yAxisId="right" orientation="right" stroke="#6b7280" />
-            <Tooltip 
-              contentStyle={{ 
-                backgroundColor: 'white', 
+            <Tooltip
+              contentStyle={{
+                backgroundColor: 'white',
                 border: '1px solid #e5e7eb',
-                borderRadius: '8px'
-              }} 
+                borderRadius: '8px',
+              }}
             />
             <Legend />
-            <Line 
+            <Line
               yAxisId="left"
-              type="monotone" 
-              dataKey="calories" 
-              stroke="#ef4444" 
+              type="monotone"
+              dataKey="calories"
+              stroke="#ef4444"
               strokeWidth={2}
               dot={{ fill: '#ef4444', r: 3 }}
               name="Calories"
             />
-            <Line 
+            <Line
               yAxisId="right"
-              type="monotone" 
-              dataKey="steps" 
-              stroke="#3b82f6" 
+              type="monotone"
+              dataKey="steps"
+              stroke="#3b82f6"
               strokeWidth={2}
               dot={{ fill: '#3b82f6', r: 3 }}
               name="Steps"
             />
-            <Line 
+            <Line
               yAxisId="left"
-              type="monotone" 
-              dataKey="workouts" 
-              stroke="#10b981" 
+              type="monotone"
+              dataKey="workouts"
+              stroke="#10b981"
               strokeWidth={2}
               dot={{ fill: '#10b981', r: 3 }}
               name="Workouts"
@@ -166,7 +187,9 @@ export function ProgressTracker({ dailyData, currentWeight, startWeight, targetW
         <Card className="p-4">
           <p className="text-sm text-gray-500 mb-1">Avg Steps/Day</p>
           <p className="text-2xl">
-            {Math.round(dailyData.reduce((sum, day) => sum + day.steps, 0) / dailyData.length).toLocaleString()}
+            {Math.round(
+              dailyData.reduce((sum, day) => sum + day.steps, 0) / dailyData.length,
+            ).toLocaleString()}
           </p>
         </Card>
         <Card className="p-4">

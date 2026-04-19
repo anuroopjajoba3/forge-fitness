@@ -1,8 +1,8 @@
-import { useState } from "react";
-import { Button } from "./ui/button";
-import { Input } from "./ui/input";
-import { Label } from "./ui/label";
-import { Activity, Eye, EyeOff, Dumbbell, TrendingUp, Target } from "lucide-react";
+import { useState } from 'react';
+import { Button } from './ui/button';
+import { Input } from './ui/input';
+import { Label } from './ui/label';
+import { Activity, Eye, EyeOff, Dumbbell, TrendingUp, Target } from 'lucide-react';
 
 interface LoginPageProps {
   onLogin: (email: string, password: string) => Promise<void>;
@@ -11,8 +11,8 @@ interface LoginPageProps {
 }
 
 export function LoginPage({ onLogin, onSwitchToSignUp, error }: LoginPageProps) {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -22,7 +22,7 @@ export function LoginPage({ onLogin, onSwitchToSignUp, error }: LoginPageProps) 
     try {
       await onLogin(email, password);
     } catch (err) {
-      console.error("Login error:", err);
+      console.error('Login error:', err);
     } finally {
       setIsLoading(false);
     }
@@ -60,7 +60,9 @@ export function LoginPage({ onLogin, onSwitchToSignUp, error }: LoginPageProps) 
           {/* Login Form */}
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <Label htmlFor="email" className="text-white mb-2 block">Email Address</Label>
+              <Label htmlFor="email" className="text-white mb-2 block">
+                Email Address
+              </Label>
               <Input
                 id="email"
                 type="email"
@@ -73,11 +75,13 @@ export function LoginPage({ onLogin, onSwitchToSignUp, error }: LoginPageProps) 
             </div>
 
             <div>
-              <Label htmlFor="password" className="text-white mb-2 block">Password</Label>
+              <Label htmlFor="password" className="text-white mb-2 block">
+                Password
+              </Label>
               <div className="relative">
                 <Input
                   id="password"
-                  type={showPassword ? "text" : "password"}
+                  type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter your password"
@@ -89,11 +93,7 @@ export function LoginPage({ onLogin, onSwitchToSignUp, error }: LoginPageProps) 
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-4 top-1/2 -translate-y-1/2 text-stone-400 hover:text-white transition-colors"
                 >
-                  {showPassword ? (
-                    <EyeOff className="w-5 h-5" />
-                  ) : (
-                    <Eye className="w-5 h-5" />
-                  )}
+                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
               </div>
             </div>
@@ -103,7 +103,7 @@ export function LoginPage({ onLogin, onSwitchToSignUp, error }: LoginPageProps) 
               disabled={isLoading}
               className="w-full h-12 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-semibold text-base"
             >
-              {isLoading ? "Signing in..." : "Sign In"}
+              {isLoading ? 'Signing in...' : 'Sign In'}
             </Button>
           </form>
 
@@ -117,7 +117,7 @@ export function LoginPage({ onLogin, onSwitchToSignUp, error }: LoginPageProps) 
           {/* Sign Up Link */}
           <div className="text-center">
             <p className="text-stone-400 mb-4">
-              Don't have an account?{" "}
+              Don't have an account?{' '}
               <button
                 onClick={onSwitchToSignUp}
                 className="text-emerald-500 hover:text-emerald-400 font-semibold transition-colors"
@@ -132,13 +132,13 @@ export function LoginPage({ onLogin, onSwitchToSignUp, error }: LoginPageProps) 
       {/* Right Side - Hero Section */}
       <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-emerald-500 via-emerald-600 to-teal-600 p-12 items-center justify-center relative overflow-hidden">
         {/* Background Image */}
-        <div 
+        <div
           className="absolute inset-0 bg-cover bg-center"
-          style={{ 
-            backgroundImage: `url('https://images.unsplash.com/photo-1734189605012-f03d97a4d98f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxneW0lMjB3b3Jrb3V0JTIwbW90aXZhdGlvbiUyMGF0aGxldGljfGVufDF8fHx8MTc3MDYwOTE4OXww&ixlib=rb-4.1.0&q=80&w=1080')` 
+          style={{
+            backgroundImage: `url('https://images.unsplash.com/photo-1734189605012-f03d97a4d98f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxneW0lMjB3b3Jrb3V0JTIwbW90aXZhdGlvbiUyMGF0aGxldGljfGVufDF8fHx8MTc3MDYwOTE4OXww&ixlib=rb-4.1.0&q=80&w=1080')`,
           }}
         />
-        
+
         {/* Gradient Overlay */}
         <div className="absolute inset-0 bg-gradient-to-br from-emerald-600/95 via-emerald-700/90 to-teal-700/95"></div>
 
@@ -154,7 +154,8 @@ export function LoginPage({ onLogin, onSwitchToSignUp, error }: LoginPageProps) 
             Transform Your Body, Transform Your Life
           </h2>
           <p className="text-xl text-white/90 mb-12">
-            Track workouts, monitor nutrition, and achieve your fitness goals with AI-powered insights.
+            Track workouts, monitor nutrition, and achieve your fitness goals with AI-powered
+            insights.
           </p>
 
           {/* Features */}
@@ -165,7 +166,9 @@ export function LoginPage({ onLogin, onSwitchToSignUp, error }: LoginPageProps) 
               </div>
               <div>
                 <h3 className="text-white font-semibold text-lg mb-1">Smart Workout Tracking</h3>
-                <p className="text-white/80">Log every set, rep, and kg with our pro-level workout logger</p>
+                <p className="text-white/80">
+                  Log every set, rep, and kg with our pro-level workout logger
+                </p>
               </div>
             </div>
 
@@ -175,7 +178,9 @@ export function LoginPage({ onLogin, onSwitchToSignUp, error }: LoginPageProps) 
               </div>
               <div>
                 <h3 className="text-white font-semibold text-lg mb-1">Progress Analytics</h3>
-                <p className="text-white/80">Visualize your gains with detailed charts and insights</p>
+                <p className="text-white/80">
+                  Visualize your gains with detailed charts and insights
+                </p>
               </div>
             </div>
 
@@ -185,7 +190,9 @@ export function LoginPage({ onLogin, onSwitchToSignUp, error }: LoginPageProps) 
               </div>
               <div>
                 <h3 className="text-white font-semibold text-lg mb-1">AI Personal Trainer</h3>
-                <p className="text-white/80">Get personalized workout recommendations and form tips</p>
+                <p className="text-white/80">
+                  Get personalized workout recommendations and form tips
+                </p>
               </div>
             </div>
           </div>

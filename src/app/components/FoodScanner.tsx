@@ -1,10 +1,10 @@
-import { useState, useRef } from "react";
-import { Button } from "./ui/button";
-import { Card } from "./ui/card";
-import { Camera, Upload, X, Loader2 } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "./ui/dialog";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
-import { Label } from "./ui/label";
+import { useState, useRef } from 'react';
+import { Button } from './ui/button';
+import { Card } from './ui/card';
+import { Camera, Upload, X, Loader2 } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from './ui/dialog';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
+import { Label } from './ui/label';
 
 interface NutritionData {
   foodName: string;
@@ -29,7 +29,7 @@ export function FoodScanner({ isOpen, onClose, onSave }: FoodScannerProps) {
   const [image, setImage] = useState<string | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [nutritionData, setNutritionData] = useState<NutritionData | null>(null);
-  const [mealType, setMealType] = useState<string>("breakfast");
+  const [mealType, setMealType] = useState<string>('breakfast');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -46,15 +46,15 @@ export function FoodScanner({ isOpen, onClose, onSave }: FoodScannerProps) {
 
   const analyzeImage = async (imageData: string) => {
     setIsAnalyzing(true);
-    
+
     try {
       // In production, call your AI API here
       // For now, using mock data with variety
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+
       const mockFoods = [
         {
-          foodName: "Grilled Chicken Salad",
+          foodName: 'Grilled Chicken Salad',
           calories: 350,
           protein: 32,
           carbs: 25,
@@ -62,10 +62,10 @@ export function FoodScanner({ isOpen, onClose, onSave }: FoodScannerProps) {
           fiber: 8,
           sugar: 6,
           sodium: 320,
-          servingSize: "1 bowl (300g)",
+          servingSize: '1 bowl (300g)',
         },
         {
-          foodName: "Salmon with Rice",
+          foodName: 'Salmon with Rice',
           calories: 520,
           protein: 38,
           carbs: 52,
@@ -73,10 +73,10 @@ export function FoodScanner({ isOpen, onClose, onSave }: FoodScannerProps) {
           fiber: 4,
           sugar: 2,
           sodium: 480,
-          servingSize: "1 plate (400g)",
+          servingSize: '1 plate (400g)',
         },
         {
-          foodName: "Fruit Smoothie Bowl",
+          foodName: 'Fruit Smoothie Bowl',
           calories: 280,
           protein: 8,
           carbs: 58,
@@ -84,14 +84,14 @@ export function FoodScanner({ isOpen, onClose, onSave }: FoodScannerProps) {
           fiber: 12,
           sugar: 32,
           sodium: 95,
-          servingSize: "1 bowl (350g)",
+          servingSize: '1 bowl (350g)',
         },
       ];
-      
+
       const randomFood = mockFoods[Math.floor(Math.random() * mockFoods.length)];
       setNutritionData(randomFood);
     } catch (error) {
-      console.error("Error analyzing image:", error);
+      console.error('Error analyzing image:', error);
     } finally {
       setIsAnalyzing(false);
     }
@@ -109,7 +109,7 @@ export function FoodScanner({ isOpen, onClose, onSave }: FoodScannerProps) {
     setImage(null);
     setNutritionData(null);
     setIsAnalyzing(false);
-    setMealType("breakfast");
+    setMealType('breakfast');
   };
 
   return (
@@ -128,7 +128,9 @@ export function FoodScanner({ isOpen, onClose, onSave }: FoodScannerProps) {
               <div className="border-2 border-dashed border-gray-300 rounded-lg p-12 text-center hover:border-blue-400 transition-colors">
                 <Camera className="w-16 h-16 mx-auto mb-4 text-gray-400" />
                 <p className="text-gray-600 mb-4">Take a photo or upload an image of your food</p>
-                <p className="text-sm text-gray-500 mb-4">Our AI will analyze and provide nutritional information</p>
+                <p className="text-sm text-gray-500 mb-4">
+                  Our AI will analyze and provide nutritional information
+                </p>
                 <div className="flex gap-4 justify-center">
                   <Button onClick={() => fileInputRef.current?.click()}>
                     <Upload className="w-4 h-4 mr-2" />
@@ -148,11 +150,7 @@ export function FoodScanner({ isOpen, onClose, onSave }: FoodScannerProps) {
             <div className="space-y-4">
               {/* Image Preview */}
               <div className="relative">
-                <img
-                  src={image}
-                  alt="Food"
-                  className="w-full h-64 object-cover rounded-lg"
-                />
+                <img src={image} alt="Food" className="w-full h-64 object-cover rounded-lg" />
                 <Button
                   variant="ghost"
                   size="icon"
@@ -179,9 +177,11 @@ export function FoodScanner({ isOpen, onClose, onSave }: FoodScannerProps) {
                     <div className="w-2 h-2 rounded-full bg-green-500"></div>
                     <span className="text-sm text-green-600">AI Analysis Complete</span>
                   </div>
-                  
+
                   <h3 className="text-xl font-bold mb-2">{nutritionData.foodName}</h3>
-                  <p className="text-sm text-gray-500 mb-4">Serving Size: {nutritionData.servingSize}</p>
+                  <p className="text-sm text-gray-500 mb-4">
+                    Serving Size: {nutritionData.servingSize}
+                  </p>
 
                   {/* Meal Type Selector */}
                   <div className="mb-6">
@@ -249,7 +249,10 @@ export function FoodScanner({ isOpen, onClose, onSave }: FoodScannerProps) {
                     <Button variant="outline" onClick={handleReset} className="flex-1">
                       Scan Another
                     </Button>
-                    <Button onClick={handleSave} className="flex-1 bg-gradient-to-r from-blue-500 to-purple-500">
+                    <Button
+                      onClick={handleSave}
+                      className="flex-1 bg-gradient-to-r from-blue-500 to-purple-500"
+                    >
                       Save to Log
                     </Button>
                   </div>

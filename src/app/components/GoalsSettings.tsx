@@ -1,10 +1,10 @@
-import { useState } from "react";
-import { Card } from "./ui/card";
-import { Button } from "./ui/button";
-import { Input } from "./ui/input";
-import { Label } from "./ui/label";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "./ui/dialog";
-import { Target, Droplets, Footprints, Flame } from "lucide-react";
+import { useState } from 'react';
+import { Card } from './ui/card';
+import { Button } from './ui/button';
+import { Input } from './ui/input';
+import { Label } from './ui/label';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from './ui/dialog';
+import { Target, Droplets, Footprints, Flame } from 'lucide-react';
 
 export interface Goals {
   caloriesBurn: number;
@@ -40,9 +40,7 @@ export function GoalsSettings({ isOpen, onClose, currentGoals, onSave }: GoalsSe
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Daily Goals Settings</DialogTitle>
-          <DialogDescription>
-            Set your daily fitness and nutrition targets
-          </DialogDescription>
+          <DialogDescription>Set your daily fitness and nutrition targets</DialogDescription>
         </DialogHeader>
 
         <div className="space-y-6">
@@ -122,7 +120,8 @@ export function GoalsSettings({ isOpen, onClose, currentGoals, onSave }: GoalsSe
                 className="mt-2"
               />
               <p className="text-xs text-gray-500 mt-1">
-                {(goals.water / 1000).toFixed(1)}L or {Math.round(goals.water / 250)} glasses (250ml each)
+                {(goals.water / 1000).toFixed(1)}L or {Math.round(goals.water / 250)} glasses (250ml
+                each)
               </p>
             </div>
           </div>

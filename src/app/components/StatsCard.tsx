@@ -1,5 +1,5 @@
-import { LucideIcon } from "lucide-react";
-import { Card } from "./ui/card";
+import { LucideIcon } from 'lucide-react';
+import { Card } from './ui/card';
 
 interface StatsCardProps {
   title: string;
@@ -21,7 +21,9 @@ export function StatsCard({ title, value, unit, icon: Icon, change, color }: Sta
             {unit && <span className="text-lg text-gray-500">{unit}</span>}
           </div>
           {change && (
-            <p className={`text-sm mt-2 ${parseFloat(change) >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+            <p
+              className={`text-sm mt-2 ${parseFloat(change) >= 0 ? 'text-green-600' : 'text-red-600'}`}
+            >
               {parseFloat(change) >= 0 ? '↑' : '↓'} {Math.abs(parseFloat(change))}% from last week
             </p>
           )}

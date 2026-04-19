@@ -1,6 +1,6 @@
-import { Card } from "./ui/card";
-import { Progress } from "./ui/progress";
-import { Target } from "lucide-react";
+import { Card } from './ui/card';
+import { Progress } from './ui/progress';
+import { Target } from 'lucide-react';
 
 interface Goal {
   id: string;
@@ -38,9 +38,7 @@ export function GoalProgress({ goals }: GoalProgressProps) {
                 </span>
               </div>
               <Progress value={percentage} className="h-2" />
-              <p className="text-xs text-gray-500 mt-1">
-                {percentage.toFixed(0)}% complete
-              </p>
+              <p className="text-xs text-gray-500 mt-1">{percentage.toFixed(0)}% complete</p>
             </div>
           );
         })}

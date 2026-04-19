@@ -1,7 +1,18 @@
-import { Card } from "./ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, LineChart, Line } from "recharts";
-import { TrendingUp, Calendar, Flame, Footprints, Dumbbell } from "lucide-react";
+import { Card } from './ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  Legend,
+  LineChart,
+  Line,
+} from 'recharts';
+import { TrendingUp, Calendar, Flame, Footprints, Dumbbell } from 'lucide-react';
 
 interface AnalyticsData {
   weeklyStats: Array<{
@@ -54,7 +65,7 @@ export function AnalyticsDashboard({ data }: AnalyticsDashboardProps) {
                   contentStyle={{
                     backgroundColor: 'white',
                     border: '1px solid #e5e7eb',
-                    borderRadius: '8px'
+                    borderRadius: '8px',
                   }}
                 />
                 <Legend />
@@ -96,7 +107,7 @@ export function AnalyticsDashboard({ data }: AnalyticsDashboardProps) {
                   contentStyle={{
                     backgroundColor: 'white',
                     border: '1px solid #e5e7eb',
-                    borderRadius: '8px'
+                    borderRadius: '8px',
                   }}
                 />
                 <Legend />
@@ -165,7 +176,7 @@ export function AnalyticsDashboard({ data }: AnalyticsDashboardProps) {
                   contentStyle={{
                     backgroundColor: 'white',
                     border: '1px solid #e5e7eb',
-                    borderRadius: '8px'
+                    borderRadius: '8px',
                   }}
                 />
                 <Legend />
@@ -180,7 +191,10 @@ export function AnalyticsDashboard({ data }: AnalyticsDashboardProps) {
               <h3 className="text-lg mb-4">Workout Frequency</h3>
               <div className="space-y-3">
                 {data.workoutTypes.map((type, idx) => (
-                  <div key={idx} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                  <div
+                    key={idx}
+                    className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                  >
                     <div>
                       <p className="font-medium capitalize">{type.type}</p>
                       <p className="text-sm text-gray-500">{type.totalMinutes} min total</p>
@@ -200,9 +214,10 @@ export function AnalyticsDashboard({ data }: AnalyticsDashboardProps) {
                 <div className="p-4 bg-green-50 rounded-lg">
                   <p className="text-sm font-medium text-green-900">Most Frequent</p>
                   <p className="text-lg text-green-700 capitalize">
-                    {data.workoutTypes.reduce((max, type) => 
-                      type.count > max.count ? type : max
-                    ).type}
+                    {
+                      data.workoutTypes.reduce((max, type) => (type.count > max.count ? type : max))
+                        .type
+                    }
                   </p>
                 </div>
                 <div className="p-4 bg-blue-50 rounded-lg">
@@ -214,7 +229,10 @@ export function AnalyticsDashboard({ data }: AnalyticsDashboardProps) {
                 <div className="p-4 bg-purple-50 rounded-lg">
                   <p className="text-sm font-medium text-purple-900">Total Time</p>
                   <p className="text-lg text-purple-700">
-                    {Math.round(data.workoutTypes.reduce((sum, type) => sum + type.totalMinutes, 0) / 60)} hours
+                    {Math.round(
+                      data.workoutTypes.reduce((sum, type) => sum + type.totalMinutes, 0) / 60,
+                    )}{' '}
+                    hours
                   </p>
                 </div>
               </div>

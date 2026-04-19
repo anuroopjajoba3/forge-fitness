@@ -1,9 +1,9 @@
-import { useState } from "react";
-import { Card } from "./ui/card";
-import { Button } from "./ui/button";
-import { Input } from "./ui/input";
-import { Label } from "./ui/label";
-import { Scale, Activity, Zap } from "lucide-react";
+import { useState } from 'react';
+import { Card } from './ui/card';
+import { Button } from './ui/button';
+import { Input } from './ui/input';
+import { Label } from './ui/label';
+import { Scale, Activity, Zap } from 'lucide-react';
 
 interface BodyMetrics {
   weight: number;
@@ -20,8 +20,8 @@ interface BodyMetricsTrackerProps {
 
 export function BodyMetricsTracker({ currentWeight, height, onSave }: BodyMetricsTrackerProps) {
   const [weight, setWeight] = useState(currentWeight.toString());
-  const [bodyFat, setBodyFat] = useState("");
-  const [muscleMass, setMuscleMass] = useState("");
+  const [bodyFat, setBodyFat] = useState('');
+  const [muscleMass, setMuscleMass] = useState('');
 
   const calculateBMI = (weightKg: number, heightCm: number) => {
     const heightM = heightCm / 100;
@@ -29,10 +29,10 @@ export function BodyMetricsTracker({ currentWeight, height, onSave }: BodyMetric
   };
 
   const getBMICategory = (bmi: number) => {
-    if (bmi < 18.5) return { label: "Underweight", color: "text-blue-600" };
-    if (bmi < 25) return { label: "Normal", color: "text-green-600" };
-    if (bmi < 30) return { label: "Overweight", color: "text-yellow-600" };
-    return { label: "Obese", color: "text-red-600" };
+    if (bmi < 18.5) return { label: 'Underweight', color: 'text-blue-600' };
+    if (bmi < 25) return { label: 'Normal', color: 'text-green-600' };
+    if (bmi < 30) return { label: 'Overweight', color: 'text-yellow-600' };
+    return { label: 'Obese', color: 'text-red-600' };
   };
 
   const handleSave = () => {
@@ -43,8 +43,8 @@ export function BodyMetricsTracker({ currentWeight, height, onSave }: BodyMetric
       date: new Date().toISOString(),
     };
     onSave(metrics);
-    setBodyFat("");
-    setMuscleMass("");
+    setBodyFat('');
+    setMuscleMass('');
   };
 
   const bmi = parseFloat(calculateBMI(parseFloat(weight) || currentWeight, height));
@@ -130,7 +130,8 @@ export function BodyMetricsTracker({ currentWeight, height, onSave }: BodyMetric
             <div className="text-center">
               <p className="text-xs text-gray-500">Lean Mass</p>
               <p className="text-lg font-medium">
-                {(parseFloat(weight) - (parseFloat(weight) * parseFloat(bodyFat)) / 100).toFixed(1)} kg
+                {(parseFloat(weight) - (parseFloat(weight) * parseFloat(bodyFat)) / 100).toFixed(1)}{' '}
+                kg
               </p>
             </div>
           </div>

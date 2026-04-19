@@ -1,12 +1,12 @@
-import { useState } from "react";
-import { Button } from "./ui/button";
-import { Input } from "./ui/input";
-import { Label } from "./ui/label";
-import { Card } from "./ui/card";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "./ui/dialog";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
-import { Dumbbell, Clock, Flame } from "lucide-react";
-import { Textarea } from "./ui/textarea";
+import { useState } from 'react';
+import { Button } from './ui/button';
+import { Input } from './ui/input';
+import { Label } from './ui/label';
+import { Card } from './ui/card';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from './ui/dialog';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
+import { Dumbbell, Clock, Flame } from 'lucide-react';
+import { Textarea } from './ui/textarea';
 
 export interface WorkoutData {
   id: string;
@@ -31,25 +31,25 @@ interface WorkoutLoggerProps {
 }
 
 const workoutTypes = [
-  { value: "cardio", label: "Cardio", icon: "🏃" },
-  { value: "strength", label: "Strength Training", icon: "💪" },
-  { value: "yoga", label: "Yoga", icon: "🧘" },
-  { value: "cycling", label: "Cycling", icon: "🚴" },
-  { value: "swimming", label: "Swimming", icon: "🏊" },
-  { value: "sports", label: "Sports", icon: "⚽" },
-  { value: "other", label: "Other", icon: "🏋️" },
+  { value: 'cardio', label: 'Cardio', icon: '🏃' },
+  { value: 'strength', label: 'Strength Training', icon: '💪' },
+  { value: 'yoga', label: 'Yoga', icon: '🧘' },
+  { value: 'cycling', label: 'Cycling', icon: '🚴' },
+  { value: 'swimming', label: 'Swimming', icon: '🏊' },
+  { value: 'sports', label: 'Sports', icon: '⚽' },
+  { value: 'other', label: 'Other', icon: '🏋️' },
 ];
 
 export function WorkoutLogger({ isOpen, onClose, onSave }: WorkoutLoggerProps) {
-  const [workoutName, setWorkoutName] = useState("");
-  const [workoutType, setWorkoutType] = useState("");
-  const [duration, setDuration] = useState("");
-  const [calories, setCalories] = useState("");
-  const [notes, setNotes] = useState("");
+  const [workoutName, setWorkoutName] = useState('');
+  const [workoutType, setWorkoutType] = useState('');
+  const [duration, setDuration] = useState('');
+  const [calories, setCalories] = useState('');
+  const [notes, setNotes] = useState('');
 
   const handleSave = () => {
     if (!workoutName || !workoutType || !duration || !calories) {
-      alert("Please fill in all required fields");
+      alert('Please fill in all required fields');
       return;
     }
 
@@ -69,11 +69,11 @@ export function WorkoutLogger({ isOpen, onClose, onSave }: WorkoutLoggerProps) {
   };
 
   const handleReset = () => {
-    setWorkoutName("");
-    setWorkoutType("");
-    setDuration("");
-    setCalories("");
-    setNotes("");
+    setWorkoutName('');
+    setWorkoutType('');
+    setDuration('');
+    setCalories('');
+    setNotes('');
   };
 
   return (
