@@ -30,6 +30,7 @@ git push -u origin main
 ## 🗄️ Step 2: Set Up Supabase (3 minutes)
 
 ### Create Project
+
 1. Go to [supabase.com](https://supabase.com) → Sign in/up
 2. Click **"New Project"**
 3. Fill in:
@@ -39,6 +40,7 @@ git push -u origin main
 4. Click **"Create new project"** (takes ~2 min)
 
 ### Get Your Keys
+
 1. Once ready, go to **Settings** → **API**
 2. Copy these:
    - **Project URL**: `https://xxxxx.supabase.co`
@@ -47,6 +49,7 @@ git push -u origin main
    - **service_role key**: Another long string (keep secret!)
 
 ### Update Your Code
+
 Edit `/utils/supabase/info.tsx`:
 
 ```typescript
@@ -63,11 +66,13 @@ export const publicAnonKey = 'eyJhbGc...'; // Your anon key here
 ### Install Supabase CLI
 
 **macOS/Linux:**
+
 ```bash
 brew install supabase/tap/supabase
 ```
 
 **Windows:**
+
 ```bash
 scoop bucket add supabase https://github.com/supabase/scoop-bucket.git
 scoop install supabase
@@ -92,6 +97,7 @@ supabase secrets set SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
 ```
 
 ### Test It
+
 ```bash
 curl https://xxxxx.supabase.co/functions/v1/make-server-56c079d7/health \
   -H "Authorization: Bearer your-anon-key"
@@ -161,16 +167,19 @@ Your app is live at: `https://forge-fitness-xxxxx.netlify.app`
 ## 🐛 Common Issues
 
 ### "Cannot connect to server"
+
 - ✅ Check `/utils/supabase/info.tsx` has correct project ID
 - ✅ Verify edge function is deployed: `supabase functions list`
 - ✅ Test health endpoint with curl
 
 ### "Build failed on Vercel"
+
 - ✅ Check Node version is 18+
 - ✅ Run `npm run build` locally first
 - ✅ Check for TypeScript errors
 
 ### "Login doesn't work"
+
 - ✅ Edge function must be deployed
 - ✅ Environment secrets must be set
 - ✅ Check browser console for errors

@@ -19,11 +19,13 @@ Before starting, make sure you have:
 Download from [git-scm.com](https://git-scm.com/download/win)
 
 **macOS:**
+
 ```bash
 brew install git
 ```
 
 **Linux:**
+
 ```bash
 sudo apt-get install git  # Ubuntu/Debian
 sudo yum install git      # CentOS/RHEL
@@ -108,6 +110,7 @@ git commit -m "Initial commit - Forge Fitness Tracker
 ### Step 5: Connect to GitHub
 
 Copy the repository URL from GitHub (looks like this):
+
 - **HTTPS**: `https://github.com/YOUR_USERNAME/forge-fitness.git`
 - **SSH**: `git@github.com:YOUR_USERNAME/forge-fitness.git`
 
@@ -129,6 +132,7 @@ git push -u origin main
 ```
 
 If prompted for credentials:
+
 - **Username**: Your GitHub username
 - **Password**: Your GitHub Personal Access Token (not your actual password!)
 
@@ -211,16 +215,21 @@ git push origin feature/workout-sharing
 ## 🎨 Customizing Your Repository
 
 ### Add Repository Topics
+
 1. Go to your repo on GitHub
 2. Click **"Add topics"** (under About section)
 3. Add: `fitness`, `react`, `typescript`, `supabase`, `tailwindcss`, `workout-tracker`
 
 ### Add Repository Description
+
 Click the ⚙️ icon next to About and add:
+
 > A comprehensive fitness tracking application with workout logging, nutrition tracking, progress analytics, and an AI-powered fitness trainer. Built with React, TypeScript, Tailwind CSS, and Supabase.
 
 ### Enable GitHub Pages (Optional)
+
 If you deployed to Vercel/Netlify, add the live URL:
+
 1. Settings → scroll to "Website"
 2. Add your deployed URL
 
@@ -229,12 +238,14 @@ If you deployed to Vercel/Netlify, add the live URL:
 ## 📊 Repository Settings Recommendations
 
 ### General Settings
+
 - ✅ Enable "Issues" (for bug reports)
 - ✅ Enable "Discussions" (for community)
 - ❌ Disable "Wikis" (unless you plan to use it)
 - ❌ Disable "Projects" (unless needed)
 
 ### Branch Protection (for main branch)
+
 1. Settings → Branches → Add rule
 2. Branch name pattern: `main`
 3. Settings:
@@ -246,11 +257,13 @@ If you deployed to Vercel/Netlify, add the live URL:
 ## 🔄 Syncing with GitHub
 
 ### Pull latest changes (if working from multiple computers)
+
 ```bash
 git pull origin main
 ```
 
 ### Clone on another computer
+
 ```bash
 git clone https://github.com/YOUR_USERNAME/forge-fitness.git
 cd forge-fitness
@@ -279,27 +292,35 @@ dist/               # Build output (generated, not source code)
 ## 🚨 Common Issues & Solutions
 
 ### Issue: "git: command not found"
+
 **Solution**: Git not installed. Install from [git-scm.com](https://git-scm.com)
 
 ### Issue: "Permission denied (publickey)"
+
 **Solution**: Use HTTPS instead of SSH, or set up SSH keys
 
 ### Issue: "Updates were rejected because the remote contains work"
-**Solution**: 
+
+**Solution**:
+
 ```bash
 git pull origin main --rebase
 git push origin main
 ```
 
 ### Issue: "Large files warning"
+
 **Solution**: GitHub has 100MB file limit. Remove large files:
+
 ```bash
 git rm --cached large-file.zip
 git commit -m "Remove large file"
 ```
 
 ### Issue: "Accidentally committed .env file"
+
 **Solution**:
+
 ```bash
 # Remove from git but keep locally
 git rm --cached .env
@@ -382,6 +403,7 @@ chore:    Maintenance tasks
 ```
 
 **Examples:**
+
 ```bash
 git commit -m "feat: Add workout sharing functionality"
 git commit -m "fix: Resolve login authentication error"
@@ -408,9 +430,10 @@ git commit -m "style: Format components with Prettier"
 
 ## 🎉 Success!
 
-Your Forge fitness tracker is now on GitHub! 
+Your Forge fitness tracker is now on GitHub!
 
 **Next Steps:**
+
 1. ⭐ Star your own repo (why not?)
 2. 📝 Read [DEPLOYMENT.md](./DEPLOYMENT.md) to deploy
 3. 🚀 Deploy to Vercel/Netlify

@@ -7,6 +7,7 @@ Common issues and solutions for deployment and runtime problems.
 ## 🚨 Emergency Quick Fixes
 
 ### App Won't Load / White Screen
+
 ```bash
 # 1. Check browser console (F12)
 # 2. Look for red errors
@@ -18,6 +19,7 @@ Common issues and solutions for deployment and runtime problems.
 ```
 
 ### "Cannot connect to server" Error
+
 ```bash
 # Edge function not deployed or not healthy
 
@@ -33,6 +35,7 @@ curl https://YOUR_PROJECT.supabase.co/functions/v1/make-server-56c079d7/health \
 ```
 
 ### Login/Signup Not Working
+
 ```bash
 # 1. Edge function must be deployed
 # 2. Environment secrets must be set
@@ -57,9 +60,11 @@ supabase secrets list
 **Solutions:**
 
 1. **Test locally first:**
+
 ```bash
 npm run build
 ```
+
 If it fails locally, fix errors before deploying.
 
 2. **Check Node version:**
@@ -70,11 +75,13 @@ If it fails locally, fix errors before deploying.
    - Vercel Dashboard → Deployments → ...menu → Redeploy → Check "Clear cache"
 
 4. **Check for TypeScript errors:**
+
 ```bash
 npx tsc --noEmit
 ```
 
 5. **Missing dependencies:**
+
 ```bash
 npm install
 # Make sure package.json has all dependencies
@@ -108,6 +115,7 @@ git push origin main
 2. **Check build logs** for specific error
 
 3. **Test locally:**
+
 ```bash
 rm -rf node_modules dist
 npm install
@@ -131,6 +139,7 @@ npm run build
 
 2. **Base URL issue:**
    - Add to `vite.config.ts`:
+
 ```typescript
 export default defineConfig({
   base: '/forge-fitness/', // Your repo name
@@ -139,6 +148,7 @@ export default defineConfig({
 ```
 
 3. **Redeploy:**
+
 ```bash
 npm run deploy
 ```
@@ -150,18 +160,21 @@ npm run deploy
 ### Edge Function Won't Deploy
 
 **Error: "Not logged in"**
+
 ```bash
 supabase login
 # Follow browser authentication
 ```
 
 **Error: "Project not linked"**
+
 ```bash
 supabase link --project-ref your-project-id
 # Get project ID from Supabase dashboard URL
 ```
 
 **Error: "Function deployment failed"**
+
 ```bash
 # Check function code for errors
 # Verify file exists: /supabase/functions/server/index.tsx
@@ -178,6 +191,7 @@ supabase functions deploy make-server-56c079d7 --no-verify-jwt
 ### Edge Function Returns 500 Error
 
 **Check logs:**
+
 ```bash
 supabase functions logs make-server-56c079d7 --limit 50
 ```
@@ -185,6 +199,7 @@ supabase functions logs make-server-56c079d7 --limit 50
 **Common causes:**
 
 1. **Missing environment secrets:**
+
 ```bash
 # Check what's set:
 supabase secrets list
@@ -214,6 +229,7 @@ supabase secrets set SUPABASE_SERVICE_ROLE_KEY=your-key
 - Verify `kv_store_56c079d7` table exists
 
 **Solution:**
+
 ```bash
 # Function creates table on first use
 # Make a test API call to trigger creation
@@ -230,6 +246,7 @@ curl https://YOUR_PROJECT.supabase.co/functions/v1/make-server-56c079d7/health \
 **Error: "Permission denied (publickey)"**
 
 **Solution: Use HTTPS instead:**
+
 ```bash
 # Remove SSH remote
 git remote remove origin
@@ -244,6 +261,7 @@ git push -u origin main
 **Error: "Authentication failed"**
 
 **Solution: Use Personal Access Token:**
+
 1. GitHub → Settings → Developer settings
 2. Personal access tokens → Tokens (classic)
 3. Generate new token
@@ -298,6 +316,7 @@ git push origin main
 **Error: "Port 5173 is already in use"**
 
 **Solution:**
+
 ```bash
 # Kill process on port (macOS/Linux)
 lsof -ti:5173 | xargs kill
@@ -307,6 +326,7 @@ npm run dev -- --port 3000
 ```
 
 **Windows:**
+
 ```bash
 # Find process
 netstat -ano | findstr :5173
@@ -322,6 +342,7 @@ taskkill /PID 1234 /F
 **Error: "Cannot find module 'xyz'"**
 
 **Solution:**
+
 ```bash
 # Clean install
 rm -rf node_modules package-lock.json
@@ -338,6 +359,7 @@ npm install xyz
 **Error: "Type 'X' is not assignable to type 'Y'"**
 
 **Quick fix (not recommended for production):**
+
 ```typescript
 // Add // @ts-ignore above the line
 // @ts-ignore
@@ -345,6 +367,7 @@ const something: Type = value;
 ```
 
 **Proper fix:**
+
 - Read the error message carefully
 - Fix type definitions
 - Add proper type annotations
@@ -356,6 +379,7 @@ const something: Type = value;
 ### Can't Sign Up
 
 **Check:**
+
 1. Edge function deployed? ✅
 2. Secrets set? ✅
 3. Network tab shows request? ✅
@@ -364,15 +388,18 @@ const something: Type = value;
 **Common responses:**
 
 **500 Error:**
+
 - Edge function issue
 - Check Supabase function logs
 
 **400 Error:**
+
 - Invalid input
 - Check password requirements
 - Check email format
 
 **No response:**
+
 - CORS issue
 - Check edge function CORS setup
 
@@ -395,6 +422,7 @@ const something: Type = value;
    - Check for extra spaces
 
 **Solution: Reset user**
+
 ```bash
 # Create new test account
 # Use different email
@@ -407,6 +435,7 @@ const something: Type = value;
 **Issue: Logged out after refresh**
 
 **Check:**
+
 1. `localStorage` working?
    - Browser DevTools → Application → Local Storage
    - Should see `forge_user_id`
@@ -415,6 +444,7 @@ const something: Type = value;
    - LocalStorage may be disabled
 
 **Solution:**
+
 ```typescript
 // Verify localStorage is available
 if (typeof window !== 'undefined' && window.localStorage) {
@@ -431,6 +461,7 @@ if (typeof window !== 'undefined' && window.localStorage) {
 **Tailwind classes not working:**
 
 1. **Build the CSS:**
+
 ```bash
 npm run dev
 # Tailwind compiles on dev server start
@@ -448,15 +479,18 @@ npm run dev
 ### Images Not Displaying
 
 **Unsplash images:**
+
 - Requires internet connection
 - Check console for CORS errors
 - Images may be rate-limited
 
 **figma:asset images:**
+
 - Only works in Figma Make environment
 - Replace with regular image URLs for production
 
 **Solution:**
+
 ```typescript
 // Replace figma:asset imports with regular URLs
 // Or use Unsplash for all images
@@ -469,12 +503,14 @@ npm run dev
 **Issue: Desktop view on mobile**
 
 **Check viewport meta tag:**
+
 ```html
 <!-- In index.html -->
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 ```
 
 **Test responsive:**
+
 - Chrome DevTools → Toggle device toolbar (Ctrl+Shift+M)
 - Test on actual mobile device
 
@@ -485,6 +521,7 @@ npm run dev
 ### Workouts Not Saving
 
 **Check console for errors:**
+
 1. F12 → Console
 2. Log a workout
 3. Look for red errors
@@ -492,6 +529,7 @@ npm run dev
 **Common causes:**
 
 1. **Edge function down:**
+
 ```bash
 # Test health
 curl https://YOUR_PROJECT.supabase.co/functions/v1/make-server-56c079d7/health \
@@ -512,11 +550,13 @@ curl https://YOUR_PROJECT.supabase.co/functions/v1/make-server-56c079d7/health \
 **Dashboard shows 0 for everything:**
 
 **This is normal for new users!**
+
 - Dashboard shows actual data
 - Log workouts to see stats update
 - Track nutrition to see macros
 
 **If you DID log data:**
+
 1. Check userId matches
 2. Check date format
 3. Check API response in Network tab
@@ -528,15 +568,18 @@ curl https://YOUR_PROJECT.supabase.co/functions/v1/make-server-56c079d7/health \
 ### AI Not Responding
 
 **Check:**
+
 1. Input not empty?
 2. Send button enabled?
 3. Console errors?
 
 **Issue: Infinite "typing"**
+
 - Refresh page
 - Ask question again
 
 **Issue: Same answer every time**
+
 - AI uses keyword matching
 - Try more specific questions
 - Different keywords trigger different responses
@@ -557,6 +600,7 @@ curl https://YOUR_PROJECT.supabase.co/functions/v1/make-server-56c079d7/health \
    - Inspect response data
 
 3. **Check Supabase logs**
+
 ```bash
 supabase functions logs make-server-56c079d7
 ```
@@ -579,19 +623,21 @@ supabase functions logs make-server-56c079d7
 // In browser console (F12)
 
 // Check if user is logged in
-localStorage.getItem('forge_user_id')
+localStorage.getItem('forge_user_id');
 
 // Clear all data (reset)
-localStorage.clear()
+localStorage.clear();
 
 // Check Supabase config
-console.log('Project ID:', projectId)
-console.log('Anon Key:', publicAnonKey)
+console.log('Project ID:', projectId);
+console.log('Anon Key:', publicAnonKey);
 
 // Test API call
 fetch('https://YOUR_PROJECT.supabase.co/functions/v1/make-server-56c079d7/health', {
-  headers: { 'Authorization': 'Bearer YOUR_ANON_KEY' }
-}).then(r => r.json()).then(console.log)
+  headers: { Authorization: 'Bearer YOUR_ANON_KEY' },
+})
+  .then((r) => r.json())
+  .then(console.log);
 ```
 
 ---
@@ -599,6 +645,7 @@ fetch('https://YOUR_PROJECT.supabase.co/functions/v1/make-server-56c079d7/health
 ## 📞 When to Ask for Help
 
 **Try these first:**
+
 1. ✅ Check this troubleshooting guide
 2. ✅ Check other .md documentation files
 3. ✅ Search error message in guides (Ctrl+F)
@@ -608,12 +655,14 @@ fetch('https://YOUR_PROJECT.supabase.co/functions/v1/make-server-56c079d7/health
 7. ✅ Check Supabase status page
 
 **Then ask for help:**
+
 - 💬 Supabase Discord: [discord.supabase.com](https://discord.supabase.com)
 - 💬 React Discord: [discord.gg/react](https://discord.gg/react)
 - 🐛 Stack Overflow: Tag with `supabase`, `react`, `vite`
 - 🐛 Open GitHub issue on your repository
 
 **When asking, include:**
+
 1. What you were trying to do
 2. What you expected to happen
 3. What actually happened
@@ -627,6 +676,7 @@ fetch('https://YOUR_PROJECT.supabase.co/functions/v1/make-server-56c079d7/health
 ## ✅ Prevention Checklist
 
 **Before deploying:**
+
 - [ ] Works locally (`npm run dev`)
 - [ ] Build succeeds (`npm run build`)
 - [ ] No console errors
@@ -635,6 +685,7 @@ fetch('https://YOUR_PROJECT.supabase.co/functions/v1/make-server-56c079d7/health
 - [ ] Edge function deployed and tested
 
 **After deploying:**
+
 - [ ] Test immediately
 - [ ] Monitor logs for first hour
 - [ ] Test on mobile
@@ -648,6 +699,7 @@ fetch('https://YOUR_PROJECT.supabase.co/functions/v1/make-server-56c079d7/health
 **Nuclear option (start fresh):**
 
 1. **Backend reset:**
+
 ```bash
 # Delete and redeploy edge function
 supabase functions delete make-server-56c079d7
@@ -655,6 +707,7 @@ supabase functions deploy make-server-56c079d7
 ```
 
 2. **Frontend reset:**
+
 ```bash
 # Delete node_modules and reinstall
 rm -rf node_modules dist
@@ -667,6 +720,7 @@ npm run build
    - Redeploy from scratch
 
 4. **Code reset:**
+
 ```bash
 # Create new branch
 git checkout -b fresh-start
@@ -680,12 +734,14 @@ git reset --hard <commit-hash>
 ## 📚 Additional Resources
 
 ### Official Docs
+
 - [Supabase Docs](https://supabase.com/docs)
 - [Supabase Troubleshooting](https://supabase.com/docs/guides/platform/troubleshooting)
 - [Vercel Troubleshooting](https://vercel.com/docs/concepts/deployments/troubleshoot-a-build)
 - [Vite Troubleshooting](https://vitejs.dev/guide/troubleshooting.html)
 
 ### Community
+
 - [Supabase Discord](https://discord.supabase.com)
 - [Supabase GitHub Discussions](https://github.com/supabase/supabase/discussions)
 - [Stack Overflow](https://stackoverflow.com/questions/tagged/supabase)
