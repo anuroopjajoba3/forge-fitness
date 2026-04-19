@@ -1,179 +1,154 @@
-import { useState, useEffect } from "react";
-import { Activity } from "lucide-react";
-import { LoginPage } from "./components/LoginPage";
-import { SignUpPage } from "./components/SignUpPage";
-import { OnboardingFlow } from "./components/OnboardingFlow";
-import { Dashboard } from "./components/Dashboard";
-import { WorkoutSession } from "./components/WorkoutSession";
-import { NutritionTracker } from "./components/NutritionTracker";
-import { ProgressAnalytics } from "./components/ProgressAnalytics";
-import { AITrainerChat } from "./components/AITrainerChat";
-import { WorkoutRoutines } from "./components/WorkoutRoutines";
-import { Navigation } from "./components/Navigation";
-import { projectId, publicAnonKey } from '/utils/supabase/info';
+import { useEffect, useState } from 'react';
+import { Activity } from 'lucide-react';
+import { LoginPage } from './components/LoginPage';
+import { SignUpPage } from './components/SignUpPage';
+import { OnboardingFlow } from './components/OnboardingFlow';
+import { Dashboard } from './components/Dashboard';
+import { WorkoutSession } from './components/WorkoutSession';
+import { NutritionTracker } from './components/NutritionTracker';
+import { ProgressAnalytics } from './components/ProgressAnalytics';
+import { AITrainerChat } from './components/AITrainerChat';
+import { WorkoutRoutines } from './components/WorkoutRoutines';
+import { Navigation } from './components/Navigation';
+import { supabase, authedFetch } from '/utils/supabase/info';
+import type { UserProfile } from './types/user';
 
-interface UserProfile {
-  name: string;
-  age: number;
-  gender: string;
-  height: number;
-  weight: number;
-  activityLevel: string;
-  goal: string;
-  targetWeight?: number;
-  startWeight?: number;
-  startDate?: string;
-}
+type View = 'dashboard' | 'workout' | 'nutrition' | 'progress' | 'routines' | 'ai';
 
 function App() {
   const [authView, setAuthView] = useState<'login' | 'signup'>('login');
-  const [authError, setAuthError] = useState("");
+  const [authError, setAuthError] = useState('');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
   const [hasProfile, setHasProfile] = useState<boolean | null>(null);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [isLoadingProfile, setIsLoadingProfile] = useState(true);
-  const [currentView, setCurrentView] = useState<'dashboard' | 'workout' | 'nutrition' | 'progress' | 'routines' | 'ai'>('dashboard');
+  const [currentView, setCurrentView] = useState<View>('dashboard');
 
-  const API_BASE = `https://${projectId}.supabase.co/functions/v1/make-server-56c079d7`;
+  // Subscribe to Supabase auth. The client handles session persistence and
+  // refresh tokens; we just mirror it into React state.
+  useEffect(() => {
+    let mounted = true;
 
-  const checkSession = async () => {
-    try {
-      const storedUserId = localStorage.getItem('forge_user_id');
-      if (storedUserId) {
-        setUserId(storedUserId);
+    supabase.auth.getSession().then(({ data }) => {
+      if (!mounted) return;
+      const session = data.session;
+      if (session) {
+        setUserId(session.user.id);
         setIsLoggedIn(true);
       } else {
         setIsLoadingProfile(false);
       }
-    } catch (error) {
-      console.error('Session check error:', error);
-      setIsLoadingProfile(false);
-    }
-  };
+    });
+
+    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (!mounted) return;
+      if (session) {
+        setUserId(session.user.id);
+        setIsLoggedIn(true);
+      } else {
+        setUserId(null);
+        setIsLoggedIn(false);
+        setHasProfile(null);
+        setUserProfile(null);
+        setIsLoadingProfile(false);
+      }
+    });
+
+    return () => {
+      mounted = false;
+      sub.subscription.unsubscribe();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!isLoggedIn || !userId) return;
+    void loadUserProfile();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLoggedIn, userId]);
 
   const loadUserProfile = async () => {
-    if (!userId) {
-      setIsLoadingProfile(false);
-      return;
-    }
-
     try {
       setIsLoadingProfile(true);
-      const response = await fetch(`${API_BASE}/profile/${userId}`, {
-        headers: {
-          'Authorization': `Bearer ${publicAnonKey}`,
-        },
-      });
+      const response = await authedFetch('/profile');
       const data = await response.json();
-      
       if (data.success && data.profile) {
-        setUserProfile(data.profile);
+        setUserProfile(data.profile as UserProfile);
         setHasProfile(true);
       } else {
         setHasProfile(false);
       }
-    } catch (error) {
-      console.error('Error loading profile:', error);
+    } catch (err) {
+      console.error('Error loading profile:', err);
       setHasProfile(false);
     } finally {
       setIsLoadingProfile(false);
     }
   };
 
-  useEffect(() => {
-    checkSession();
-  }, []);
-
-  useEffect(() => {
-    if (isLoggedIn && userId) {
-      loadUserProfile();
-    }
-  }, [isLoggedIn, userId]);
-
   const handleSignUp = async (email: string, password: string, name: string) => {
     try {
-      setAuthError("");
-      const response = await fetch(`${API_BASE}/auth/signup`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${publicAnonKey}`,
-        },
-        body: JSON.stringify({ email, password, name }),
+      setAuthError('');
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: { data: { name } },
       });
-
-      const data = await response.json();
-      
-      if (data.success) {
-        setUserId(data.userId);
-        localStorage.setItem('forge_user_id', data.userId);
+      if (error) {
+        setAuthError(error.message);
+        return;
+      }
+      if (data.session) {
+        setUserId(data.session.user.id);
         setIsLoggedIn(true);
         setHasProfile(false);
       } else {
-        setAuthError(data.error || 'Failed to create account');
+        // Email confirmation required
+        setAuthError('Account created — please check your email to confirm before logging in.');
       }
-    } catch (error) {
-      console.error('Signup error:', error);
+    } catch (err) {
+      console.error('Signup error:', err);
       setAuthError('Network error. Please try again.');
     }
   };
 
   const handleLogin = async (email: string, password: string) => {
     try {
-      setAuthError("");
-      const response = await fetch(`${API_BASE}/auth/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${publicAnonKey}`,
-        },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data = await response.json();
-      
-      if (data.success) {
-        setUserId(data.userId);
-        localStorage.setItem('forge_user_id', data.userId);
-        setIsLoggedIn(true);
-      } else {
-        setAuthError(data.error || 'Invalid credentials');
+      setAuthError('');
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) {
+        setAuthError(error.message);
+        return;
       }
-    } catch (error) {
-      console.error('Login error:', error);
+      if (data.session) {
+        setUserId(data.session.user.id);
+        setIsLoggedIn(true);
+      }
+    } catch (err) {
+      console.error('Login error:', err);
       setAuthError('Network error. Please try again.');
     }
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('fittrack_user_id');
-    setIsLoggedIn(false);
-    setUserId(null);
-    setHasProfile(null);
-    setUserProfile(null);
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    // State cleared via the onAuthStateChange listener.
     setAuthView('login');
     setCurrentView('dashboard');
   };
 
   const saveProfile = async (profile: UserProfile) => {
     try {
-      const profileWithStart = {
+      const profileWithStart: UserProfile = {
         ...profile,
         startWeight: profile.weight,
         startDate: new Date().toISOString(),
-        userId,
       };
-      
-      const response = await fetch(`${API_BASE}/profile`, {
+
+      const response = await authedFetch('/profile', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${publicAnonKey}`,
-        },
         body: JSON.stringify(profileWithStart),
       });
-      
       const data = await response.json();
       if (data.success) {
         setUserProfile(profileWithStart);
@@ -181,8 +156,8 @@ function App() {
       } else {
         console.error('Failed to save profile');
       }
-    } catch (error) {
-      console.error('Error saving profile:', error);
+    } catch (err) {
+      console.error('Error saving profile:', err);
     }
   };
 
@@ -193,7 +168,7 @@ function App() {
           onSignUp={handleSignUp}
           onSwitchToLogin={() => {
             setAuthView('login');
-            setAuthError("");
+            setAuthError('');
           }}
           error={authError}
         />
@@ -204,7 +179,7 @@ function App() {
         onLogin={handleLogin}
         onSwitchToSignUp={() => {
           setAuthView('signup');
-          setAuthError("");
+          setAuthError('');
         }}
         error={authError}
       />
@@ -226,7 +201,7 @@ function App() {
     return <OnboardingFlow onComplete={saveProfile} />;
   }
 
-  if (!userProfile) {
+  if (!userProfile || !userId) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-stone-950">
         <div className="text-center">
@@ -239,7 +214,7 @@ function App() {
 
   return (
     <div className="w-full bg-stone-950">
-      <Navigation 
+      <Navigation
         currentView={currentView}
         onViewChange={setCurrentView}
         onLogout={handleLogout}
@@ -248,23 +223,21 @@ function App() {
 
       <main className="w-full pb-28 md:pb-8">
         {currentView === 'dashboard' && (
-          <Dashboard userId={userId!} userProfile={userProfile} onNavigateToWorkout={() => setCurrentView('workout')} />
+          <Dashboard
+            userId={userId}
+            userProfile={userProfile}
+            onNavigateToWorkout={() => setCurrentView('workout')}
+          />
         )}
-        {currentView === 'workout' && (
-          <WorkoutSession userId={userId!} />
-        )}
+        {currentView === 'workout' && <WorkoutSession userId={userId} />}
         {currentView === 'nutrition' && (
-          <NutritionTracker userId={userId!} userProfile={userProfile} />
+          <NutritionTracker userId={userId} userProfile={userProfile} />
         )}
         {currentView === 'progress' && (
-          <ProgressAnalytics userId={userId!} userProfile={userProfile} />
+          <ProgressAnalytics userId={userId} userProfile={userProfile} />
         )}
-        {currentView === 'routines' && (
-          <WorkoutRoutines userId={userId!} />
-        )}
-        {currentView === 'ai' && (
-          <AITrainerChat userId={userId!} userProfile={userProfile} />
-        )}
+        {currentView === 'routines' && <WorkoutRoutines userId={userId} />}
+        {currentView === 'ai' && <AITrainerChat userId={userId} userProfile={userProfile} />}
       </main>
     </div>
   );
