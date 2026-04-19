@@ -1,9 +1,9 @@
-import { useState } from "react";
-import { Card } from "./ui/card";
-import { Button } from "./ui/button";
-import { Input } from "./ui/input";
-import { Bot, Send, Sparkles } from "lucide-react";
-import { projectId, publicAnonKey } from '/utils/supabase/info';
+import { useState } from 'react';
+import { Card } from './ui/card';
+import { Button } from './ui/button';
+import { Input } from './ui/input';
+import { Bot, Send, Sparkles } from 'lucide-react';
+import { authedFetch } from '/utils/supabase/info';
 
 interface AITrainerChatProps {
   userId: string;
@@ -29,9 +29,6 @@ export function AITrainerChat({ userId, userProfile }: AITrainerChatProps) {
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [aiSource, setAiSource] = useState<string>('');
-
-  const API_BASE = `https://${projectId}.supabase.co/functions/v1/make-server-56c079d7`;
-
   const quickQuestions = [
     'How to improve my bench press?',
     'Best post-workout meal?',
@@ -56,12 +53,8 @@ export function AITrainerChat({ userId, userProfile }: AITrainerChatProps) {
 
     try {
       // Call backend AI trainer API
-      const response = await fetch(`${API_BASE}/ai-trainer`, {
+      const response = await authedFetch(`/ai-trainer`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${publicAnonKey}`,
-        },
         body: JSON.stringify({
           message: currentInput,
           userProfile: {
@@ -83,7 +76,7 @@ export function AITrainerChat({ userId, userProfile }: AITrainerChatProps) {
           content: data.response,
           timestamp: new Date(),
         };
-        setMessages(prev => [...prev, aiMessage]);
+        setMessages((prev) => [...prev, aiMessage]);
         setAiSource(data.source);
       } else {
         throw new Error('Failed to get AI response');
@@ -97,7 +90,7 @@ export function AITrainerChat({ userId, userProfile }: AITrainerChatProps) {
         content: `I'm having trouble connecting right now. Here's some general advice:\n\nFor ${userProfile.goal}:\n- Focus on progressive overload\n- Protein: ${Math.round(userProfile.weight * 2)}g/day\n- Sleep 7-9 hours\n- Train consistently\n\nPlease try again in a moment!`,
         timestamp: new Date(),
       };
-      setMessages(prev => [...prev, aiMessage]);
+      setMessages((prev) => [...prev, aiMessage]);
     } finally {
       setIsTyping(false);
     }
@@ -115,7 +108,10 @@ export function AITrainerChat({ userId, userProfile }: AITrainerChatProps) {
         </div>
 
         {/* Chat Container */}
-        <Card className="bg-stone-900 border-stone-800 flex flex-col" style={{ height: 'calc(100vh - 280px)', minHeight: '500px' }}>
+        <Card
+          className="bg-stone-900 border-stone-800 flex flex-col"
+          style={{ height: 'calc(100vh - 280px)', minHeight: '500px' }}
+        >
           {/* Messages */}
           <div className="flex-1 overflow-y-auto p-6 space-y-4">
             {messages.map((message) => (
@@ -138,7 +134,10 @@ export function AITrainerChat({ userId, userProfile }: AITrainerChatProps) {
                   )}
                   <p className="whitespace-pre-line">{message.content}</p>
                   <p className="text-xs opacity-60 mt-2">
-                    {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    {message.timestamp.toLocaleTimeString([], {
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    })}
                   </p>
                 </div>
               </div>
@@ -148,9 +147,18 @@ export function AITrainerChat({ userId, userProfile }: AITrainerChatProps) {
               <div className="flex justify-start">
                 <div className="bg-stone-800 rounded-lg p-4">
                   <div className="flex gap-2">
-                    <div className="w-2 h-2 bg-stone-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                    <div className="w-2 h-2 bg-stone-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                    <div className="w-2 h-2 bg-stone-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                    <div
+                      className="w-2 h-2 bg-stone-500 rounded-full animate-bounce"
+                      style={{ animationDelay: '0ms' }}
+                    />
+                    <div
+                      className="w-2 h-2 bg-stone-500 rounded-full animate-bounce"
+                      style={{ animationDelay: '150ms' }}
+                    />
+                    <div
+                      className="w-2 h-2 bg-stone-500 rounded-full animate-bounce"
+                      style={{ animationDelay: '300ms' }}
+                    />
                   </div>
                 </div>
               </div>

@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
-import { Card } from "./ui/card";
-import { Button } from "./ui/button";
-import { Dumbbell, Flame, Clock, TrendingUp, Target, Droplets, Footprints } from "lucide-react";
-import { projectId, publicAnonKey } from '/utils/supabase/info';
+import { useState, useEffect } from 'react';
+import { Card } from './ui/card';
+import { Button } from './ui/button';
+import { Dumbbell, Flame, Clock, TrendingUp, Target, Droplets, Footprints } from 'lucide-react';
+import { authedFetch } from '/utils/supabase/info';
 
 interface DashboardProps {
   userId: string;
@@ -37,9 +37,6 @@ export function Dashboard({ userId, userProfile, onNavigateToWorkout }: Dashboar
     { day: 'Sat', active: false },
     { day: 'Sun', active: false },
   ]);
-
-  const API_BASE = `https://${projectId}.supabase.co/functions/v1/make-server-56c079d7`;
-
   useEffect(() => {
     loadTodayStats();
   }, [userId]);
@@ -47,11 +44,9 @@ export function Dashboard({ userId, userProfile, onNavigateToWorkout }: Dashboar
   const loadTodayStats = async () => {
     try {
       const today = new Date().toISOString().split('T')[0];
-      
+
       // Fetch ALL workouts
-      const workoutsResponse = await fetch(`${API_BASE}/workouts/${userId}`, {
-        headers: { 'Authorization': `Bearer ${publicAnonKey}` },
-      });
+      const workoutsResponse = await authedFetch(`/workouts/${userId}`, {});
       const workoutsData = await workoutsResponse.json();
       const allWorkouts = workoutsData.workouts || [];
 
@@ -62,14 +57,18 @@ export function Dashboard({ userId, userProfile, onNavigateToWorkout }: Dashboar
       });
 
       const todayWorkoutsCount = todaysWorkouts.length;
-      const todayDuration = todaysWorkouts.reduce((sum: number, w: any) => sum + (w.duration || 0), 0);
-      const todayVolume = todaysWorkouts.reduce((sum: number, w: any) => sum + (w.totalVolume || 0), 0);
-      const todayCaloriesBurned = Math.round(todayDuration / 60 * 5);
+      const todayDuration = todaysWorkouts.reduce(
+        (sum: number, w: any) => sum + (w.duration || 0),
+        0,
+      );
+      const todayVolume = todaysWorkouts.reduce(
+        (sum: number, w: any) => sum + (w.totalVolume || 0),
+        0,
+      );
+      const todayCaloriesBurned = Math.round((todayDuration / 60) * 5);
 
       // Fetch today's water
-      const waterResponse = await fetch(`${API_BASE}/water/${userId}/${today}`, {
-        headers: { 'Authorization': `Bearer ${publicAnonKey}` },
-      });
+      const waterResponse = await authedFetch(`/water/${userId}/${today}`, {});
       const waterData = await waterResponse.json();
       const todayWater = waterData.amount || 0;
 
@@ -81,25 +80,25 @@ export function Dashboard({ userId, userProfile, onNavigateToWorkout }: Dashboar
       let weekWater = 0;
 
       const waterPromises = [];
-      
+
       for (let i = 6; i >= 0; i--) {
         const date = new Date();
         date.setDate(date.getDate() - i);
         const dateStr = date.toISOString().split('T')[0];
-        
+
         // Check if there's a workout on this day
         const dayWorkouts = allWorkouts.filter((w: any) => {
           const workoutDate = new Date(w.date).toISOString().split('T')[0];
           return workoutDate === dateStr;
         });
-        
+
         const hasWorkout = dayWorkouts.length > 0;
         const dayName = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][date.getDay()];
-        
-        weeklyActivity.push({ 
-          day: dayName, 
+
+        weeklyActivity.push({
+          day: dayName,
           active: hasWorkout,
-          workouts: dayWorkouts.length 
+          workouts: dayWorkouts.length,
         });
 
         // Accumulate weekly stats
@@ -111,9 +110,9 @@ export function Dashboard({ userId, userProfile, onNavigateToWorkout }: Dashboar
 
         // Fetch water for this day
         waterPromises.push(
-          fetch(`${API_BASE}/water/${userId}/${dateStr}`, {
-            headers: { 'Authorization': `Bearer ${publicAnonKey}` },
-          }).then(res => res.json()).catch(() => ({ amount: 0 }))
+          authedFetch(`/water/${userId}/${dateStr}`, {})
+            .then((res) => res.json())
+            .catch(() => ({ amount: 0 })),
         );
       }
 
@@ -121,13 +120,13 @@ export function Dashboard({ userId, userProfile, onNavigateToWorkout }: Dashboar
       const weekWaterData = await Promise.all(waterPromises);
       weekWater = weekWaterData.reduce((sum: number, data: any) => sum + (data.amount || 0), 0);
 
-      const weekCaloriesBurned = Math.round(weekDuration / 60 * 5);
+      const weekCaloriesBurned = Math.round((weekDuration / 60) * 5);
 
       console.log('Weekly activity:', weeklyActivity);
       console.log('Week stats:', { weekWorkoutsCount, weekDuration, weekVolume, weekWater });
 
       setWeekActivity(weeklyActivity);
-      
+
       // Set TODAY stats
       setTodayStats({
         workouts: todayWorkoutsCount,
@@ -161,10 +160,38 @@ export function Dashboard({ userId, userProfile, onNavigateToWorkout }: Dashboar
   };
 
   const goals = [
-    { id: 'steps', name: 'Steps', current: todayStats.steps, target: 10000, icon: Footprints, color: 'blue' },
-    { id: 'calories', name: 'Calories', current: todayStats.caloriesBurned, target: 500, icon: Flame, color: 'red' },
-    { id: 'water', name: 'Water (ml)', current: todayStats.waterIntake, target: 2000, icon: Droplets, color: 'cyan' },
-    { id: 'duration', name: 'Active Minutes', current: todayStats.duration, target: 60, icon: Clock, color: 'green' },
+    {
+      id: 'steps',
+      name: 'Steps',
+      current: todayStats.steps,
+      target: 10000,
+      icon: Footprints,
+      color: 'blue',
+    },
+    {
+      id: 'calories',
+      name: 'Calories',
+      current: todayStats.caloriesBurned,
+      target: 500,
+      icon: Flame,
+      color: 'red',
+    },
+    {
+      id: 'water',
+      name: 'Water (ml)',
+      current: todayStats.waterIntake,
+      target: 2000,
+      icon: Droplets,
+      color: 'cyan',
+    },
+    {
+      id: 'duration',
+      name: 'Active Minutes',
+      current: todayStats.duration,
+      target: 60,
+      icon: Clock,
+      color: 'green',
+    },
   ];
 
   return (
@@ -206,15 +233,15 @@ export function Dashboard({ userId, userProfile, onNavigateToWorkout }: Dashboar
         {/* Activity Trends */}
         <Card className="bg-stone-900 border-stone-800 p-6">
           <h3 className="text-lg font-semibold text-white mb-4">Weekly Activity</h3>
-          <p className="text-sm text-stone-400 mb-4">{weekStats.workouts} workouts completed this week</p>
+          <p className="text-sm text-stone-400 mb-4">
+            {weekStats.workouts} workouts completed this week
+          </p>
           <div className="flex items-end justify-between gap-2 h-40">
             {weekActivity.map((day, index) => (
               <div key={`${day.day}-${index}`} className="flex flex-col items-center gap-2 flex-1">
                 <div
                   className={`w-full rounded-lg transition-all flex items-end justify-center ${
-                    day.active
-                      ? 'bg-emerald-500 h-full'
-                      : 'bg-stone-700 h-10'
+                    day.active ? 'bg-emerald-500 h-full' : 'bg-stone-700 h-10'
                   }`}
                   title={`${day.day}: ${day.active ? `${(day as any).workouts || 1} workout(s)` : 'Rest day'}`}
                 >
@@ -224,7 +251,9 @@ export function Dashboard({ userId, userProfile, onNavigateToWorkout }: Dashboar
                     </span>
                   )}
                 </div>
-                <span className={`text-xs font-medium ${day.active ? 'text-emerald-400' : 'text-stone-500'}`}>
+                <span
+                  className={`text-xs font-medium ${day.active ? 'text-emerald-400' : 'text-stone-500'}`}
+                >
                   {day.day}
                 </span>
               </div>
@@ -271,11 +300,17 @@ export function Dashboard({ userId, userProfile, onNavigateToWorkout }: Dashboar
             <div className="flex-1">
               <h3 className="text-lg font-semibold text-white mb-2">AI Recommendation</h3>
               <p className="text-stone-300 mb-4">
-                Based on your profile ({userProfile?.goal || 'maintain'}), we recommend focusing on {userProfile?.goal === 'Lose Weight' ? 'cardio and high-rep training' : userProfile?.goal === 'Build Muscle' ? 'progressive overload with compound movements' : 'balanced strength and cardio training'} this week.
+                Based on your profile ({userProfile?.goal || 'maintain'}), we recommend focusing on{' '}
+                {userProfile?.goal === 'Lose Weight'
+                  ? 'cardio and high-rep training'
+                  : userProfile?.goal === 'Build Muscle'
+                    ? 'progressive overload with compound movements'
+                    : 'balanced strength and cardio training'}{' '}
+                this week.
               </p>
               <div className="flex flex-wrap gap-2">
-                <Button 
-                  size="sm" 
+                <Button
+                  size="sm"
                   className="bg-purple-500 hover:bg-purple-600"
                   onClick={onNavigateToWorkout}
                 >

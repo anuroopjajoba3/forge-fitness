@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
-import { Card } from "./ui/card";
-import { Button } from "./ui/button";
-import { TrendingUp, TrendingDown, Calendar, RefreshCw } from "lucide-react";
-import { projectId, publicAnonKey } from '/utils/supabase/info';
+import { useState, useEffect } from 'react';
+import { Card } from './ui/card';
+import { Button } from './ui/button';
+import { TrendingUp, TrendingDown, Calendar, RefreshCw } from 'lucide-react';
+import { authedFetch } from '/utils/supabase/info';
 import { ExerciseProgress } from './ExerciseProgress';
 
 interface ProgressAnalyticsProps {
@@ -15,9 +15,6 @@ export function ProgressAnalytics({ userId, userProfile }: ProgressAnalyticsProp
   const [volumeHistory, setVolumeHistory] = useState<any[]>([]);
   const [workoutHistory, setWorkoutHistory] = useState<any[]>([]);
   const [selectedExercise, setSelectedExercise] = useState<string | null>(null);
-
-  const API_BASE = `https://${projectId}.supabase.co/functions/v1/make-server-56c079d7`;
-
   useEffect(() => {
     loadProgressData();
   }, [userId]);
@@ -25,14 +22,12 @@ export function ProgressAnalytics({ userId, userProfile }: ProgressAnalyticsProp
   const loadProgressData = async () => {
     try {
       console.log('Loading progress data for user:', userId);
-      const response = await fetch(`${API_BASE}/progress/${userId}`, {
-        headers: { 'Authorization': `Bearer ${publicAnonKey}` },
-      });
-      
+      const response = await authedFetch(`/progress/${userId}`, {});
+
       console.log('Progress API response status:', response.status);
       const data = await response.json();
       console.log('Progress API data:', data);
-      
+
       if (data.success) {
         console.log('Workout history:', data.workoutHistory);
         setWeightHistory(data.weightHistory || []);
@@ -70,7 +65,11 @@ export function ProgressAnalytics({ userId, userProfile }: ProgressAnalyticsProp
           <h1 className="text-3xl font-bold text-white mb-2">Progress & Analytics</h1>
           <p className="text-stone-400">Track your transformation</p>
         </div>
-        <Button onClick={loadProgressData} variant="outline" className="border-emerald-500 text-emerald-500">
+        <Button
+          onClick={loadProgressData}
+          variant="outline"
+          className="border-emerald-500 text-emerald-500"
+        >
           <RefreshCw className="w-4 h-4 mr-2" />
           Refresh
         </Button>
@@ -97,8 +96,11 @@ export function ProgressAnalytics({ userId, userProfile }: ProgressAnalyticsProp
         <div className="flex items-center justify-between p-4 bg-stone-800 rounded-lg">
           <div>
             <p className="text-sm text-stone-400">Total Change</p>
-            <p className={`text-xl font-bold ${weightChange < 0 ? 'text-green-400' : 'text-red-400'}`}>
-              {weightChange > 0 ? '+' : ''}{weightChange.toFixed(1)}kg
+            <p
+              className={`text-xl font-bold ${weightChange < 0 ? 'text-green-400' : 'text-red-400'}`}
+            >
+              {weightChange > 0 ? '+' : ''}
+              {weightChange.toFixed(1)}kg
             </p>
           </div>
           {weightChange < 0 ? (
@@ -123,7 +125,10 @@ export function ProgressAnalytics({ userId, userProfile }: ProgressAnalyticsProp
         ) : (
           <div className="space-y-2">
             {volumeHistory.slice(0, 5).map((entry: any, index: number) => (
-              <div key={index} className="flex justify-between items-center p-3 bg-stone-800 rounded-lg">
+              <div
+                key={index}
+                className="flex justify-between items-center p-3 bg-stone-800 rounded-lg"
+              >
                 <span className="text-sm text-stone-400">
                   {new Date(entry.date).toLocaleDateString()}
                 </span>
