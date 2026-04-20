@@ -1,0 +1,8 @@
+dist
+node_modules
+coverage
+supabase/functions
+src/app/components/ui
+src/app/components/figma
+package-lock.json
+pnpm-lock.yaml

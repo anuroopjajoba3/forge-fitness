@@ -114,6 +114,7 @@ Expected response: `{"status": "healthy"}`
 #### Steps:
 
 1. **Push to GitHub**
+
 ```bash
 git init
 git add .
@@ -137,6 +138,7 @@ git push -u origin main
 3. **Done!** Your app will be live at `https://your-app.vercel.app`
 
 #### Automatic Deployments
+
 - Every push to `main` automatically deploys
 - Pull requests get preview deployments
 - Zero-downtime deployments
@@ -175,12 +177,14 @@ git push -u origin main
 #### Steps:
 
 1. **Install gh-pages**
+
 ```bash
 npm install --save-dev gh-pages
 ```
 
 2. **Update package.json**
-Add these scripts:
+   Add these scripts:
+
 ```json
 {
   "scripts": {
@@ -193,6 +197,7 @@ Add these scripts:
 ```
 
 3. **Deploy**
+
 ```bash
 npm run deploy
 ```
@@ -212,6 +217,7 @@ npm run deploy
 #### Steps:
 
 1. **Build app**
+
 ```bash
 npm run build
 ```
@@ -219,6 +225,7 @@ npm run build
 2. **Upload `dist` folder** to your server
 
 3. **Nginx Configuration** (example)
+
 ```nginx
 server {
     listen 80;
@@ -237,6 +244,7 @@ server {
 ```
 
 4. **SSL Certificate** (Let's Encrypt)
+
 ```bash
 sudo certbot --nginx -d yourdomain.com
 ```
@@ -286,12 +294,14 @@ After deployment:
 ## 📊 Monitoring
 
 ### Supabase Dashboard
+
 - Monitor API usage
 - Check Edge Function logs
 - Database queries
 - Authentication metrics
 
 ### Vercel Analytics (if using Vercel)
+
 - Page views
 - Core Web Vitals
 - Geographic distribution
@@ -301,6 +311,7 @@ After deployment:
 ## 🐛 Troubleshooting
 
 ### Edge Function 500 Error
+
 ```bash
 # Check function logs
 supabase functions logs make-server-56c079d7
@@ -312,6 +323,7 @@ supabase functions logs make-server-56c079d7
 ```
 
 ### Build Fails on Vercel
+
 ```bash
 # Common fixes:
 # 1. Verify Node version (use 18+)
@@ -321,6 +333,7 @@ supabase functions logs make-server-56c079d7
 ```
 
 ### Can't Connect to Supabase
+
 ```bash
 # Verify:
 # 1. Project ID is correct in /utils/supabase/info.tsx
@@ -334,14 +347,17 @@ supabase functions logs make-server-56c079d7
 ## 🔄 Updating Production
 
 ### Quick Updates (Frontend only)
+
 ```bash
 git add .
 git commit -m "Update: description of changes"
 git push origin main
 ```
+
 Vercel/Netlify will auto-deploy in ~2 minutes.
 
 ### Edge Function Updates
+
 ```bash
 # Make changes to /supabase/functions/server/index.tsx
 # Then redeploy:
@@ -353,12 +369,14 @@ supabase functions deploy make-server-56c079d7
 ## 📈 Scaling Considerations
 
 ### When to upgrade Supabase plan:
+
 - **Free tier limits**:
   - 500MB database
   - 50,000 monthly active users
   - 2GB bandwidth
 
 ### Performance optimizations:
+
 1. Enable database indexes for common queries
 2. Implement caching for static data
 3. Use CDN for images (Cloudinary, Imgix)

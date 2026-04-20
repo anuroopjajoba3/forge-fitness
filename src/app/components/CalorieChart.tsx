@@ -1,5 +1,5 @@
-import { Card } from "./ui/card";
-import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from "recharts";
+import { Card } from './ui/card';
+import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
 
 interface CalorieChartProps {
   data: Array<{

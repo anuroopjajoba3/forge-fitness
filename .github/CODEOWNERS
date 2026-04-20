@@ -1,0 +1,9 @@
+# Default owners for the entire repo.
+# Reviewers are requested automatically on PRs touching these paths.
+
+*                             @anuroopjajoba3
+
+# Surface-specific ownership — add co-owners here as the team grows.
+/supabase/functions/          @anuroopjajoba3
+/.github/                     @anuroopjajoba3
+/src/app/components/          @anuroopjajoba3

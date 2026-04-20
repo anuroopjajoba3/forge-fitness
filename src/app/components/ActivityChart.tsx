@@ -1,5 +1,14 @@
-import { Card } from "./ui/card";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
+import { Card } from './ui/card';
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  Legend,
+} from 'recharts';
 
 interface ActivityChartProps {
   data: Array<{
@@ -19,28 +28,28 @@ export function ActivityChart({ data }: ActivityChartProps) {
           <XAxis dataKey="day" stroke="#6b7280" />
           <YAxis yAxisId="left" stroke="#6b7280" />
           <YAxis yAxisId="right" orientation="right" stroke="#6b7280" />
-          <Tooltip 
-            contentStyle={{ 
-              backgroundColor: 'white', 
+          <Tooltip
+            contentStyle={{
+              backgroundColor: 'white',
               border: '1px solid #e5e7eb',
-              borderRadius: '8px'
-            }} 
+              borderRadius: '8px',
+            }}
           />
           <Legend />
-          <Line 
+          <Line
             yAxisId="left"
-            type="monotone" 
-            dataKey="calories" 
-            stroke="#ef4444" 
+            type="monotone"
+            dataKey="calories"
+            stroke="#ef4444"
             strokeWidth={2}
             dot={{ fill: '#ef4444', r: 4 }}
             name="Calories"
           />
-          <Line 
+          <Line
             yAxisId="right"
-            type="monotone" 
-            dataKey="steps" 
-            stroke="#3b82f6" 
+            type="monotone"
+            dataKey="steps"
+            stroke="#3b82f6"
             strokeWidth={2}
             dot={{ fill: '#3b82f6', r: 4 }}
             name="Steps"

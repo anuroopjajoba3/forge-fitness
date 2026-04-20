@@ -1,5 +1,5 @@
-import { Card } from "./ui/card";
-import { Dumbbell, Clock, Flame } from "lucide-react";
+import { Card } from './ui/card';
+import { Dumbbell, Clock, Flame } from 'lucide-react';
 
 interface Workout {
   id: string;
@@ -30,8 +30,8 @@ export function WorkoutList({ workouts }: WorkoutListProps) {
       <h3 className="text-lg mb-4">Recent Workouts</h3>
       <div className="space-y-4">
         {workouts.map((workout) => (
-          <div 
-            key={workout.id} 
+          <div
+            key={workout.id}
             className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
           >
             <div className="flex items-center gap-4">

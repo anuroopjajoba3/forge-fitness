@@ -1,10 +1,10 @@
-import { useState } from "react";
-import { Button } from "./ui/button";
-import { Input } from "./ui/input";
-import { Label } from "./ui/label";
-import { Card } from "./ui/card";
-import { Activity, User, Target, Calendar } from "lucide-react";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
+import { useState } from 'react';
+import { Button } from './ui/button';
+import { Input } from './ui/input';
+import { Label } from './ui/label';
+import { Card } from './ui/card';
+import { Activity, User, Target, Calendar } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 
 interface UserProfile {
   name: string;
@@ -72,7 +72,9 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
         <div className="mb-8">
           <div className="flex justify-between mb-2">
             <span className="text-sm text-stone-400">Step {step} of 3</span>
-            <span className="text-sm text-emerald-500 font-semibold">{Math.round((step / 3) * 100)}%</span>
+            <span className="text-sm text-emerald-500 font-semibold">
+              {Math.round((step / 3) * 100)}%
+            </span>
           </div>
           <div className="w-full bg-stone-800 rounded-full h-2">
             <div
@@ -89,12 +91,14 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
               <User className="w-5 h-5 text-emerald-500" />
               <h2 className="text-xl font-semibold text-white">Personal Information</h2>
             </div>
-            
+
             <div>
-              <Label htmlFor="name" className="text-white">Full Name</Label>
+              <Label htmlFor="name" className="text-white">
+                Full Name
+              </Label>
               <Input
                 id="name"
-                value={profile.name || ""}
+                value={profile.name || ''}
                 onChange={(e) => updateProfile({ name: e.target.value })}
                 placeholder="Enter your name"
                 className="mt-2 bg-stone-800 border-stone-700 text-white placeholder:text-stone-500"
@@ -103,11 +107,13 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="age" className="text-white">Age</Label>
+                <Label htmlFor="age" className="text-white">
+                  Age
+                </Label>
                 <Input
                   id="age"
                   type="number"
-                  value={profile.age || ""}
+                  value={profile.age || ''}
                   onChange={(e) => updateProfile({ age: parseInt(e.target.value) })}
                   placeholder="25"
                   className="mt-2 bg-stone-800 border-stone-700 text-white placeholder:text-stone-500"
@@ -115,8 +121,13 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
               </div>
 
               <div>
-                <Label htmlFor="gender" className="text-white">Gender</Label>
-                <Select value={profile.gender} onValueChange={(value) => updateProfile({ gender: value })}>
+                <Label htmlFor="gender" className="text-white">
+                  Gender
+                </Label>
+                <Select
+                  value={profile.gender}
+                  onValueChange={(value) => updateProfile({ gender: value })}
+                >
                   <SelectTrigger className="mt-2 bg-stone-800 border-stone-700 text-white">
                     <SelectValue placeholder="Select gender" />
                   </SelectTrigger>
@@ -141,11 +152,13 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="height" className="text-white">Height (cm)</Label>
+                <Label htmlFor="height" className="text-white">
+                  Height (cm)
+                </Label>
                 <Input
                   id="height"
                   type="number"
-                  value={profile.height || ""}
+                  value={profile.height || ''}
                   onChange={(e) => updateProfile({ height: parseInt(e.target.value) })}
                   placeholder="170"
                   className="mt-2 bg-stone-800 border-stone-700 text-white placeholder:text-stone-500"
@@ -153,11 +166,13 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
               </div>
 
               <div>
-                <Label htmlFor="weight" className="text-white">Weight (kg)</Label>
+                <Label htmlFor="weight" className="text-white">
+                  Weight (kg)
+                </Label>
                 <Input
                   id="weight"
                   type="number"
-                  value={profile.weight || ""}
+                  value={profile.weight || ''}
                   onChange={(e) => updateProfile({ weight: parseInt(e.target.value) })}
                   placeholder="70"
                   className="mt-2 bg-stone-800 border-stone-700 text-white placeholder:text-stone-500"
@@ -170,12 +185,20 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
               <div className="p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-lg">
                 <p className="text-sm text-emerald-400 mb-1 font-medium">Your BMI</p>
                 <p className="text-3xl font-bold text-white">
-                  {((profile.weight / Math.pow(profile.height / 100, 2)).toFixed(1))}
+                  {(profile.weight / Math.pow(profile.height / 100, 2)).toFixed(1)}
                 </p>
                 <p className="text-xs text-stone-400 mt-1">
-                  {parseFloat((profile.weight / Math.pow(profile.height / 100, 2)).toFixed(1)) < 18.5 ? 'Underweight' :
-                   parseFloat((profile.weight / Math.pow(profile.height / 100, 2)).toFixed(1)) < 25 ? 'Normal weight' :
-                   parseFloat((profile.weight / Math.pow(profile.height / 100, 2)).toFixed(1)) < 30 ? 'Overweight' : 'Obese'}
+                  {parseFloat((profile.weight / Math.pow(profile.height / 100, 2)).toFixed(1)) <
+                  18.5
+                    ? 'Underweight'
+                    : parseFloat((profile.weight / Math.pow(profile.height / 100, 2)).toFixed(1)) <
+                        25
+                      ? 'Normal weight'
+                      : parseFloat(
+                            (profile.weight / Math.pow(profile.height / 100, 2)).toFixed(1),
+                          ) < 30
+                        ? 'Overweight'
+                        : 'Obese'}
                 </p>
               </div>
             )}
@@ -191,8 +214,13 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
             </div>
 
             <div>
-              <Label htmlFor="activityLevel" className="text-white">Activity Level</Label>
-              <Select value={profile.activityLevel} onValueChange={(value) => updateProfile({ activityLevel: value })}>
+              <Label htmlFor="activityLevel" className="text-white">
+                Activity Level
+              </Label>
+              <Select
+                value={profile.activityLevel}
+                onValueChange={(value) => updateProfile({ activityLevel: value })}
+              >
                 <SelectTrigger className="mt-2 bg-stone-800 border-stone-700 text-white">
                   <SelectValue placeholder="Select your activity level" />
                 </SelectTrigger>
@@ -207,8 +235,13 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
             </div>
 
             <div>
-              <Label htmlFor="goal" className="text-white">Primary Goal</Label>
-              <Select value={profile.goal} onValueChange={(value) => updateProfile({ goal: value })}>
+              <Label htmlFor="goal" className="text-white">
+                Primary Goal
+              </Label>
+              <Select
+                value={profile.goal}
+                onValueChange={(value) => updateProfile({ goal: value })}
+              >
                 <SelectTrigger className="mt-2 bg-stone-800 border-stone-700 text-white">
                   <SelectValue placeholder="Select your goal" />
                 </SelectTrigger>
@@ -221,13 +254,15 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
               </Select>
             </div>
 
-            {(profile.goal === "lose" || profile.goal === "gain") && (
+            {(profile.goal === 'lose' || profile.goal === 'gain') && (
               <div>
-                <Label htmlFor="targetWeight" className="text-white">Target Weight (kg)</Label>
+                <Label htmlFor="targetWeight" className="text-white">
+                  Target Weight (kg)
+                </Label>
                 <Input
                   id="targetWeight"
                   type="number"
-                  value={profile.targetWeight || ""}
+                  value={profile.targetWeight || ''}
                   onChange={(e) => updateProfile({ targetWeight: parseInt(e.target.value) })}
                   placeholder="65"
                   className="mt-2 bg-stone-800 border-stone-700 text-white placeholder:text-stone-500"
@@ -240,9 +275,9 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
         {/* Navigation Buttons */}
         <div className="flex gap-4 mt-8">
           {step > 1 && (
-            <Button 
-              variant="outline" 
-              onClick={handleBack} 
+            <Button
+              variant="outline"
+              onClick={handleBack}
               className="flex-1 border-stone-700 text-stone-300 hover:bg-stone-800 hover:text-white"
             >
               Back
@@ -253,7 +288,7 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
             disabled={!isStepValid()}
             className="flex-1 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {step === 3 ? "Complete Setup" : "Next"}
+            {step === 3 ? 'Complete Setup' : 'Next'}
           </Button>
         </div>
       </Card>

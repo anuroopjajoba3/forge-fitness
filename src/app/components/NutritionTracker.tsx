@@ -1,12 +1,12 @@
-import { useState, useEffect } from "react";
-import { Card } from "./ui/card";
-import { Button } from "./ui/button";
-import { Input } from "./ui/input";
-import { Label } from "./ui/label";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "./ui/dialog";
-import { Plus, Droplets, Apple, History } from "lucide-react";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
-import { projectId, publicAnonKey } from '/utils/supabase/info';
+import { useState, useEffect } from 'react';
+import { Card } from './ui/card';
+import { Button } from './ui/button';
+import { Input } from './ui/input';
+import { Label } from './ui/label';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from './ui/dialog';
+import { Plus, Droplets, Apple, History } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
+import { authedFetch } from '/utils/supabase/info';
 import { NutritionHistory } from './NutritionHistory';
 
 interface NutritionTrackerProps {
@@ -38,9 +38,6 @@ export function NutritionTracker({ userId, userProfile }: NutritionTrackerProps)
     fats: 0,
     mealType: 'breakfast',
   });
-
-  const API_BASE = `https://${projectId}.supabase.co/functions/v1/make-server-56c079d7`;
-
   useEffect(() => {
     loadTodayMeals();
     loadWaterIntake();
@@ -49,9 +46,7 @@ export function NutritionTracker({ userId, userProfile }: NutritionTrackerProps)
   const loadTodayMeals = async () => {
     try {
       const today = new Date().toISOString().split('T')[0];
-      const response = await fetch(`${API_BASE}/meals/${userId}/${today}`, {
-        headers: { 'Authorization': `Bearer ${publicAnonKey}` },
-      });
+      const response = await authedFetch(`/meals/${userId}/${today}`, {});
       const data = await response.json();
       if (data.success && data.meals) {
         setMeals(data.meals);
@@ -64,9 +59,7 @@ export function NutritionTracker({ userId, userProfile }: NutritionTrackerProps)
   const loadWaterIntake = async () => {
     try {
       const today = new Date().toISOString().split('T')[0];
-      const response = await fetch(`${API_BASE}/water/${userId}/${today}`, {
-        headers: { 'Authorization': `Bearer ${publicAnonKey}` },
-      });
+      const response = await authedFetch(`/water/${userId}/${today}`, {});
       const data = await response.json();
       if (data.success) {
         setWaterIntake(data.amount || 0);
@@ -90,12 +83,8 @@ export function NutritionTracker({ userId, userProfile }: NutritionTrackerProps)
     };
 
     try {
-      const response = await fetch(`${API_BASE}/meals`, {
+      const response = await authedFetch(`/meals`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${publicAnonKey}`,
-        },
         body: JSON.stringify(meal),
       });
 
@@ -115,12 +104,8 @@ export function NutritionTracker({ userId, userProfile }: NutritionTrackerProps)
     setWaterIntake(newAmount);
 
     try {
-      await fetch(`${API_BASE}/water`, {
+      await authedFetch(`/water`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${publicAnonKey}`,
-        },
         body: JSON.stringify({
           userId,
           amount: newAmount,
@@ -139,7 +124,7 @@ export function NutritionTracker({ userId, userProfile }: NutritionTrackerProps)
       carbs: acc.carbs + meal.carbs,
       fats: acc.fats + meal.fats,
     }),
-    { calories: 0, protein: 0, carbs: 0, fats: 0 }
+    { calories: 0, protein: 0, carbs: 0, fats: 0 },
   );
 
   const calorieTarget = 2000; // Could be from user profile
@@ -187,7 +172,9 @@ export function NutritionTracker({ userId, userProfile }: NutritionTrackerProps)
           <div>
             <div className="flex justify-between text-sm mb-1">
               <span className="text-stone-400">Calories</span>
-              <span className="text-white">{Math.round((totals.calories / calorieTarget) * 100)}%</span>
+              <span className="text-white">
+                {Math.round((totals.calories / calorieTarget) * 100)}%
+              </span>
             </div>
             <div className="h-2 bg-stone-800 rounded-full overflow-hidden">
               <div
@@ -199,7 +186,9 @@ export function NutritionTracker({ userId, userProfile }: NutritionTrackerProps)
           <div>
             <div className="flex justify-between text-sm mb-1">
               <span className="text-stone-400">Protein</span>
-              <span className="text-white">{Math.round((totals.protein / proteinTarget) * 100)}%</span>
+              <span className="text-white">
+                {Math.round((totals.protein / proteinTarget) * 100)}%
+              </span>
             </div>
             <div className="h-2 bg-stone-800 rounded-full overflow-hidden">
               <div
@@ -219,13 +208,23 @@ export function NutritionTracker({ userId, userProfile }: NutritionTrackerProps)
               <Droplets className="w-5 h-5 text-cyan-400" />
               Hydration
             </h3>
-            <p className="text-sm text-stone-400 mt-1">{waterIntake}ml / {waterTarget}ml</p>
+            <p className="text-sm text-stone-400 mt-1">
+              {waterIntake}ml / {waterTarget}ml
+            </p>
           </div>
           <div className="flex gap-2">
-            <Button size="sm" onClick={() => addWater(250)} className="bg-cyan-500 hover:bg-cyan-600">
+            <Button
+              size="sm"
+              onClick={() => addWater(250)}
+              className="bg-cyan-500 hover:bg-cyan-600"
+            >
               +250ml
             </Button>
-            <Button size="sm" onClick={() => addWater(500)} className="bg-cyan-500 hover:bg-cyan-600">
+            <Button
+              size="sm"
+              onClick={() => addWater(500)}
+              className="bg-cyan-500 hover:bg-cyan-600"
+            >
               +500ml
             </Button>
           </div>
@@ -242,7 +241,10 @@ export function NutritionTracker({ userId, userProfile }: NutritionTrackerProps)
       <Card className="bg-stone-900 border-stone-800 p-6">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-semibold text-white">Meals</h3>
-          <Button onClick={() => setIsAddMealOpen(true)} className="bg-emerald-500 hover:bg-emerald-600">
+          <Button
+            onClick={() => setIsAddMealOpen(true)}
+            className="bg-emerald-500 hover:bg-emerald-600"
+          >
             <Plus className="w-4 h-4 mr-2" />
             Add Meal
           </Button>
@@ -280,11 +282,15 @@ export function NutritionTracker({ userId, userProfile }: NutritionTrackerProps)
         <DialogContent className="bg-stone-900 border-stone-800">
           <DialogHeader>
             <DialogTitle className="text-white">Add Meal</DialogTitle>
-            <DialogDescription className="text-stone-400">Add a new meal to your nutrition log</DialogDescription>
+            <DialogDescription className="text-stone-400">
+              Add a new meal to your nutrition log
+            </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             <div>
-              <Label htmlFor="meal-name" className="text-white">Meal Name</Label>
+              <Label htmlFor="meal-name" className="text-white">
+                Meal Name
+              </Label>
               <Input
                 id="meal-name"
                 value={newMeal.name}
@@ -295,8 +301,13 @@ export function NutritionTracker({ userId, userProfile }: NutritionTrackerProps)
             </div>
 
             <div>
-              <Label htmlFor="meal-type" className="text-white">Meal Type</Label>
-              <Select value={newMeal.mealType} onValueChange={(v) => setNewMeal({ ...newMeal, mealType: v })}>
+              <Label htmlFor="meal-type" className="text-white">
+                Meal Type
+              </Label>
+              <Select
+                value={newMeal.mealType}
+                onValueChange={(v) => setNewMeal({ ...newMeal, mealType: v })}
+              >
                 <SelectTrigger className="bg-stone-800 border-stone-700 text-white mt-2">
                   <SelectValue />
                 </SelectTrigger>
@@ -311,22 +322,30 @@ export function NutritionTracker({ userId, userProfile }: NutritionTrackerProps)
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="calories" className="text-white">Calories</Label>
+                <Label htmlFor="calories" className="text-white">
+                  Calories
+                </Label>
                 <Input
                   id="calories"
                   type="number"
                   value={newMeal.calories || ''}
-                  onChange={(e) => setNewMeal({ ...newMeal, calories: parseInt(e.target.value) || 0 })}
+                  onChange={(e) =>
+                    setNewMeal({ ...newMeal, calories: parseInt(e.target.value) || 0 })
+                  }
                   className="bg-stone-800 border-stone-700 text-white mt-2"
                 />
               </div>
               <div>
-                <Label htmlFor="protein" className="text-white">Protein (g)</Label>
+                <Label htmlFor="protein" className="text-white">
+                  Protein (g)
+                </Label>
                 <Input
                   id="protein"
                   type="number"
                   value={newMeal.protein || ''}
-                  onChange={(e) => setNewMeal({ ...newMeal, protein: parseInt(e.target.value) || 0 })}
+                  onChange={(e) =>
+                    setNewMeal({ ...newMeal, protein: parseInt(e.target.value) || 0 })
+                  }
                   className="bg-stone-800 border-stone-700 text-white mt-2"
                 />
               </div>
@@ -334,7 +353,9 @@ export function NutritionTracker({ userId, userProfile }: NutritionTrackerProps)
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="carbs" className="text-white">Carbs (g)</Label>
+                <Label htmlFor="carbs" className="text-white">
+                  Carbs (g)
+                </Label>
                 <Input
                   id="carbs"
                   type="number"
@@ -344,7 +365,9 @@ export function NutritionTracker({ userId, userProfile }: NutritionTrackerProps)
                 />
               </div>
               <div>
-                <Label htmlFor="fats" className="text-white">Fats (g)</Label>
+                <Label htmlFor="fats" className="text-white">
+                  Fats (g)
+                </Label>
                 <Input
                   id="fats"
                   type="number"
@@ -363,7 +386,10 @@ export function NutritionTracker({ userId, userProfile }: NutritionTrackerProps)
       </Dialog>
 
       {/* History Button */}
-      <Button onClick={() => setShowHistory(true)} className="w-full bg-stone-800 hover:bg-stone-700 text-white mt-4">
+      <Button
+        onClick={() => setShowHistory(true)}
+        className="w-full bg-stone-800 hover:bg-stone-700 text-white mt-4"
+      >
         <History className="w-4 h-4 mr-2" />
         View History
       </Button>

@@ -7,12 +7,14 @@ Use this checklist to ensure smooth deployment. Check off each item as you compl
 ## 📦 Pre-Deployment (Do This First)
 
 ### Update Configuration
+
 - [ ] Open `/utils/supabase/info.tsx`
 - [ ] Replace `projectId` with YOUR Supabase project ID
 - [ ] Replace `publicAnonKey` with YOUR Supabase anon key
 - [ ] Save the file
 
 ### Test Locally
+
 - [ ] Run `npm install` (if you haven't)
 - [ ] Run `npm run dev`
 - [ ] Open http://localhost:5173
@@ -28,6 +30,7 @@ Use this checklist to ensure smooth deployment. Check off each item as you compl
 ## 🗄️ Supabase Setup
 
 ### Create Project
+
 - [ ] Go to [supabase.com](https://supabase.com)
 - [ ] Sign in/create account
 - [ ] Click "New Project"
@@ -38,6 +41,7 @@ Use this checklist to ensure smooth deployment. Check off each item as you compl
 - [ ] Wait ~2 minutes for project to initialize
 
 ### Get Credentials
+
 - [ ] Project is ready? (green checkmark)
 - [ ] Go to Settings → API
 - [ ] Copy **Project URL** → Save it
@@ -47,20 +51,25 @@ Use this checklist to ensure smooth deployment. Check off each item as you compl
 - [ ] Save all credentials in secure notes app
 
 ### Install Supabase CLI
+
 Choose your OS:
 
 **macOS:**
+
 - [ ] Run: `brew install supabase/tap/supabase`
 
 **Windows:**
+
 - [ ] Install Scoop: https://scoop.sh
 - [ ] Run: `scoop bucket add supabase https://github.com/supabase/scoop-bucket.git`
 - [ ] Run: `scoop install supabase`
 
 **Linux:**
+
 - [ ] Run: `brew install supabase/tap/supabase`
 
 ### Deploy Edge Function
+
 - [ ] Run: `supabase login`
 - [ ] Authenticate in browser
 - [ ] Run: `supabase link --project-ref YOUR_PROJECT_ID`
@@ -69,17 +78,21 @@ Choose your OS:
 - [ ] See "Deployed successfully" message? ✅
 
 ### Set Environment Secrets
+
 - [ ] Run: `supabase secrets set SUPABASE_URL=https://YOUR_PROJECT.supabase.co`
 - [ ] Run: `supabase secrets set SUPABASE_ANON_KEY=your_anon_key`
 - [ ] Run: `supabase secrets set SUPABASE_SERVICE_ROLE_KEY=your_service_role_key`
 - [ ] All secrets set? ✅
 
 ### Test Edge Function
+
 - [ ] Run this curl command (replace with your details):
+
 ```bash
 curl https://YOUR_PROJECT.supabase.co/functions/v1/make-server-56c079d7/health \
   -H "Authorization: Bearer YOUR_ANON_KEY"
 ```
+
 - [ ] Response shows `{"status": "healthy"}`? ✅
 
 ---
@@ -87,6 +100,7 @@ curl https://YOUR_PROJECT.supabase.co/functions/v1/make-server-56c079d7/health \
 ## 🐙 GitHub Setup
 
 ### Create Repository
+
 - [ ] Go to [github.com](https://github.com)
 - [ ] Sign in/create account
 - [ ] Click "+" → "New repository"
@@ -98,13 +112,16 @@ curl https://YOUR_PROJECT.supabase.co/functions/v1/make-server-56c079d7/health \
 - [ ] Keep the page open for next steps
 
 ### Initialize Git Locally
+
 Open terminal in your project folder:
+
 - [ ] Run: `git init`
 - [ ] Run: `git branch -M main`
 - [ ] Run: `git add .`
 - [ ] Run: `git commit -m "Initial commit - Forge Fitness Tracker"`
 
 ### Connect to GitHub
+
 - [ ] Copy your repo URL from GitHub
 - [ ] Run: `git remote add origin https://github.com/YOUR_USERNAME/forge-fitness.git`
 - [ ] Run: `git push -u origin main`
@@ -112,6 +129,7 @@ Open terminal in your project folder:
 - [ ] Push successful? ✅
 
 ### Verify on GitHub
+
 - [ ] Refresh your GitHub repository page
 - [ ] See all your files? ✅
 - [ ] README.md displays nicely? ✅
@@ -121,6 +139,7 @@ Open terminal in your project folder:
 ## 🚀 Deploy to Vercel (Recommended)
 
 ### Connect Repository
+
 - [ ] Go to [vercel.com](https://vercel.com)
 - [ ] Sign in with GitHub
 - [ ] Click "New Project"
@@ -128,7 +147,9 @@ Open terminal in your project folder:
 - [ ] Click "Import"
 
 ### Configure Build
+
 Vercel should auto-detect settings:
+
 - [ ] Framework Preset: **Vite** (auto-selected)
 - [ ] Build Command: `npm run build` ✅
 - [ ] Output Directory: `dist` ✅
@@ -136,6 +157,7 @@ Vercel should auto-detect settings:
 - [ ] Settings look correct? ✅
 
 ### Deploy
+
 - [ ] Click "Deploy"
 - [ ] Wait 1-2 minutes
 - [ ] See "Congratulations" screen? 🎉
@@ -147,6 +169,7 @@ Vercel should auto-detect settings:
 ## 🧪 Testing Production
 
 ### Test Authentication
+
 - [ ] Open your live app URL
 - [ ] Click "Sign Up"
 - [ ] Create new account with email/password
@@ -154,6 +177,7 @@ Vercel should auto-detect settings:
 - [ ] Redirected to onboarding? ✅
 
 ### Test Onboarding
+
 - [ ] Fill in name, age, gender
 - [ ] Click "Next"
 - [ ] Fill in height, weight
@@ -165,6 +189,7 @@ Vercel should auto-detect settings:
 - [ ] Redirected to dashboard? ✅
 
 ### Test Core Features
+
 - [ ] Dashboard loads with stats
 - [ ] Click "Workout" tab
 - [ ] Add an exercise (e.g., Bench Press)
@@ -181,12 +206,14 @@ Vercel should auto-detect settings:
 - [ ] Get response? ✅
 
 ### Test on Mobile
+
 - [ ] Open app on mobile browser
 - [ ] Navigation works? ✅
 - [ ] Can log workout? ✅
 - [ ] Everything responsive? ✅
 
 ### Test Different Browsers
+
 - [ ] Chrome ✅
 - [ ] Safari ✅
 - [ ] Firefox ✅
@@ -197,6 +224,7 @@ Vercel should auto-detect settings:
 ## 🔒 Security Check
 
 ### Code Security
+
 - [ ] `SUPABASE_SERVICE_ROLE_KEY` is NOT in frontend code
 - [ ] Only in Supabase Edge Function secrets? ✅
 - [ ] `.gitignore` includes `.env` files
@@ -205,6 +233,7 @@ Vercel should auto-detect settings:
 - [ ] No results found? ✅ (Good!)
 
 ### Supabase Security
+
 - [ ] Row Level Security enabled (if using direct DB)
 - [ ] Edge function has CORS configured
 - [ ] Only necessary permissions granted
@@ -214,15 +243,16 @@ Vercel should auto-detect settings:
 ## 📊 Performance Check
 
 ### Run Lighthouse Audit
+
 - [ ] Open your live app in Chrome
 - [ ] Press F12 (DevTools)
 - [ ] Click "Lighthouse" tab
 - [ ] Select "Mobile" + "Performance"
 - [ ] Click "Analyze page load"
-- [ ] Performance score: ___/100
-- [ ] Accessibility score: ___/100
-- [ ] Best Practices score: ___/100
-- [ ] SEO score: ___/100
+- [ ] Performance score: \_\_\_/100
+- [ ] Accessibility score: \_\_\_/100
+- [ ] Best Practices score: \_\_\_/100
+- [ ] SEO score: \_\_\_/100
 - [ ] All scores 70+? ✅ (90+ is excellent!)
 
 ---
@@ -230,6 +260,7 @@ Vercel should auto-detect settings:
 ## 🎯 Post-Deployment
 
 ### Update Repository
+
 - [ ] Go to your GitHub repo
 - [ ] Edit README.md
 - [ ] Add live demo link: `**Live Demo**: https://your-app.vercel.app`
@@ -237,12 +268,14 @@ Vercel should auto-detect settings:
 - [ ] Commit changes
 
 ### Add Topics to GitHub Repo
+
 - [ ] Go to repo → About section
 - [ ] Click settings gear icon
 - [ ] Add topics: `fitness`, `react`, `typescript`, `supabase`, `tailwindcss`
 - [ ] Save
 
 ### Share Your Work
+
 - [ ] Add to portfolio
 - [ ] Share on LinkedIn
 - [ ] Tweet about it
@@ -250,6 +283,7 @@ Vercel should auto-detect settings:
 - [ ] Show friends and family
 
 ### Monitor
+
 - [ ] Check Supabase dashboard for usage
 - [ ] Monitor Vercel analytics
 - [ ] Check for errors in logs
@@ -261,6 +295,7 @@ Vercel should auto-detect settings:
 ## 📈 Optional Enhancements
 
 ### Custom Domain (Optional)
+
 - [ ] Purchase domain (Namecheap, Google Domains)
 - [ ] Go to Vercel → Project Settings → Domains
 - [ ] Add custom domain
@@ -269,11 +304,13 @@ Vercel should auto-detect settings:
 - [ ] HTTPS automatically enabled? ✅
 
 ### Analytics (Optional)
+
 - [ ] Enable Vercel Analytics
 - [ ] Or add Google Analytics
 - [ ] Or add privacy-friendly analytics (Plausible, Fathom)
 
 ### SEO (Optional)
+
 - [ ] Add meta tags to index.html
 - [ ] Create sitemap
 - [ ] Submit to Google Search Console
@@ -286,22 +323,26 @@ Vercel should auto-detect settings:
 If something doesn't work, check:
 
 ### Edge Function Issues
+
 - [ ] Function deployed? Run `supabase functions list`
 - [ ] Secrets set? Run `supabase secrets list`
 - [ ] Check logs: `supabase functions logs make-server-56c079d7`
 
 ### Frontend Issues
+
 - [ ] Correct project ID in `/utils/supabase/info.tsx`?
 - [ ] Check browser console for errors (F12)
 - [ ] Try clearing cache and reload (Ctrl+Shift+R)
 
 ### Build Fails on Vercel
+
 - [ ] Check Vercel deployment logs
 - [ ] Does `npm run build` work locally?
 - [ ] All dependencies in package.json?
 - [ ] Node version 18+ in Vercel settings?
 
 ### Can't Sign Up/Login
+
 - [ ] Edge function deployed and healthy?
 - [ ] Environment secrets set correctly?
 - [ ] Check Supabase logs for errors
@@ -313,6 +354,7 @@ If something doesn't work, check:
 All green? You're done! 🎉
 
 **Essential Checks:**
+
 - [ ] ✅ Supabase project created and configured
 - [ ] ✅ Edge function deployed and tested
 - [ ] ✅ Code pushed to GitHub
@@ -333,11 +375,13 @@ All green? You're done! 🎉
 Your Forge fitness tracker is LIVE! 🚀
 
 **Your Links:**
+
 - 🌐 **Live App**: https://_________________.vercel.app
 - 📦 **GitHub**: https://github.com/_________/forge-fitness
-- 🗄️ **Supabase**: https://supabase.com/dashboard/project/_________
+- 🗄️ **Supabase**: https://supabase.com/dashboard/project/****\_****
 
 **What's Next?**
+
 1. Share with friends for feedback
 2. Monitor user engagement
 3. Fix bugs as they come up
@@ -347,6 +391,7 @@ Your Forge fitness tracker is LIVE! 🚀
 ---
 
 **Need Help?**
+
 - 📖 Check `DEPLOYMENT.md` for detailed guides
 - 📖 Check `QUICKSTART.md` for quick reference
 - 🐛 Open GitHub issue for bugs

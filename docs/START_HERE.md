@@ -11,21 +11,27 @@ I've created comprehensive guides to help you:
 ### 🎯 Choose Your Guide:
 
 #### 1️⃣ **DEPLOY_CHECKLIST.md** ← **START HERE!**
+
 📋 Interactive checklist with checkboxes
+
 - Step-by-step tasks
 - Nothing to read, just do!
 - Check off items as you complete them
 - **Best for**: Following along while deploying
 
-#### 2️⃣ **QUICKSTART.md** 
+#### 2️⃣ **QUICKSTART.md**
+
 ⚡ 10-minute quick deployment
+
 - Minimal reading
 - Fast setup
 - Essential steps only
 - **Best for**: Experienced developers who want to move fast
 
 #### 3️⃣ **DEPLOYMENT.md**
+
 📖 Complete deployment guide
+
 - Detailed explanations
 - Multiple deployment options
 - Troubleshooting section
@@ -33,7 +39,9 @@ I've created comprehensive guides to help you:
 - **Best for**: First-time deployers who want to understand everything
 
 #### 4️⃣ **GITHUB_GUIDE.md**
+
 🐙 Git & GitHub tutorial
+
 - Git basics
 - Push to GitHub
 - Branching strategies
@@ -41,7 +49,9 @@ I've created comprehensive guides to help you:
 - **Best for**: New to Git/GitHub or need a refresher
 
 #### 5️⃣ **README.md**
+
 📱 App overview & features
+
 - What the app does
 - Technology stack
 - Features list
@@ -49,7 +59,9 @@ I've created comprehensive guides to help you:
 - **Best for**: Understanding what you built
 
 #### 6️⃣ **SUMMARY.md**
+
 📊 High-level overview
+
 - Files overview
 - Configuration needed
 - Deployment options
@@ -61,6 +73,7 @@ I've created comprehensive guides to help you:
 ## 🎯 Recommended Workflow
 
 ### For Beginners:
+
 ```
 1. Read README.md (understand your app)
    ↓
@@ -72,6 +85,7 @@ I've created comprehensive guides to help you:
 ```
 
 ### For Experienced Developers:
+
 ```
 1. Skim QUICKSTART.md
    ↓
@@ -87,13 +101,16 @@ I've created comprehensive guides to help you:
 **3 Essential Steps:**
 
 ### 1️⃣ Update Supabase Config (1 minute)
+
 Edit `/utils/supabase/info.tsx`:
+
 ```typescript
 export const projectId = 'your-project-id-here';
 export const publicAnonKey = 'your-anon-key-here';
 ```
 
 ### 2️⃣ Push to GitHub (2 minutes)
+
 ```bash
 git init
 git add .
@@ -103,6 +120,7 @@ git push -u origin main
 ```
 
 ### 3️⃣ Deploy to Vercel (2 minutes)
+
 1. Go to [vercel.com](https://vercel.com)
 2. Import your GitHub repo
 3. Click "Deploy"
@@ -116,16 +134,19 @@ See `QUICKSTART.md` for complete 10-minute guide.
 ## 📋 What You Need Before Starting
 
 ### Accounts (Free)
+
 - [ ] GitHub account ([github.com](https://github.com))
 - [ ] Supabase account ([supabase.com](https://supabase.com))
 - [ ] Vercel account ([vercel.com](https://vercel.com)) OR Netlify ([netlify.com](https://netlify.com))
 
 ### Software Installed
+
 - [ ] Git ([git-scm.com](https://git-scm.com))
 - [ ] Node.js 18+ ([nodejs.org](https://nodejs.org))
 - [ ] Supabase CLI (instructions in guides)
 
 ### Information Ready
+
 - [ ] Your GitHub username
 - [ ] Repository name idea (`forge-fitness` recommended)
 - [ ] Supabase credentials (you'll get these during setup)
@@ -160,6 +181,7 @@ See `QUICKSTART.md` for complete 10-minute guide.
 ## 🎯 Your First Deployment (Recommended Path)
 
 ### Day 1: Backend Setup (30 minutes)
+
 1. Create Supabase account
 2. Create new project
 3. Install Supabase CLI
@@ -167,6 +189,7 @@ See `QUICKSTART.md` for complete 10-minute guide.
 5. Test health endpoint
 
 ### Day 2: Frontend Deployment (30 minutes)
+
 1. Create GitHub account (if needed)
 2. Push code to GitHub
 3. Connect to Vercel
@@ -174,6 +197,7 @@ See `QUICKSTART.md` for complete 10-minute guide.
 5. Test live app
 
 ### Day 3: Polish & Share
+
 1. Add custom domain (optional)
 2. Set up analytics (optional)
 3. Share with friends
@@ -184,6 +208,7 @@ See `QUICKSTART.md` for complete 10-minute guide.
 ## 📞 Need Help?
 
 ### During Deployment:
+
 1. Check the relevant guide's troubleshooting section
 2. Search error message in guides (Ctrl+F)
 3. Check browser console (F12)
@@ -191,11 +216,13 @@ See `QUICKSTART.md` for complete 10-minute guide.
 5. Check Vercel deployment logs
 
 ### Common Issues:
+
 - **"Cannot connect to server"** → Edge function not deployed
 - **"Build failed"** → Check deployment logs, run `npm run build` locally
 - **"Login doesn't work"** → Check Supabase credentials in code
 
 ### Getting Unstuck:
+
 - 📖 Read `DEPLOYMENT.md` troubleshooting section
 - 🔍 Search for error in guides (all .md files)
 - 💬 Ask in Supabase Discord
@@ -207,16 +234,19 @@ See `QUICKSTART.md` for complete 10-minute guide.
 ## 🎓 Learning Resources
 
 ### Git & GitHub
+
 - [Git Basics](https://git-scm.com/book/en/v2/Getting-Started-Git-Basics)
 - [GitHub Guides](https://guides.github.com)
 - Our `GITHUB_GUIDE.md`
 
 ### Supabase
+
 - [Supabase Docs](https://supabase.com/docs)
 - [Edge Functions](https://supabase.com/docs/guides/functions)
 - [Supabase YouTube](https://www.youtube.com/c/Supabase)
 
 ### Deployment
+
 - [Vercel Docs](https://vercel.com/docs)
 - [Netlify Docs](https://docs.netlify.com)
 
@@ -225,6 +255,7 @@ See `QUICKSTART.md` for complete 10-minute guide.
 ## ✅ Quick Checklist (Before You Start)
 
 Essential items:
+
 - [ ] Code runs locally (`npm run dev` works)
 - [ ] All features tested locally
 - [ ] You have 1-2 hours free time
@@ -237,21 +268,27 @@ Essential items:
 ## 🎯 Which Guide Should I Read?
 
 ### "I want to deploy NOW!"
+
 → Open `QUICKSTART.md`
 
 ### "I want step-by-step with checkboxes"
+
 → Open `DEPLOY_CHECKLIST.md`
 
 ### "I want to understand everything"
+
 → Open `DEPLOYMENT.md`
 
 ### "I'm new to Git"
+
 → Open `GITHUB_GUIDE.md`
 
 ### "I want to see what I built"
+
 → Open `README.md`
 
 ### "I want a high-level overview"
+
 → Open `SUMMARY.md`
 
 ---
@@ -283,6 +320,7 @@ The guides are comprehensive, clear, and tested. Just follow along and you'll ha
 ## 🎉 What Happens After Deployment?
 
 You'll have:
+
 - ✅ Live app at `https://your-app.vercel.app`
 - ✅ GitHub repository with all your code
 - ✅ Supabase backend handling data
@@ -291,6 +329,7 @@ You'll have:
 - ✅ Professional portfolio piece
 
 **Then what?**
+
 - Share with friends
 - Add to portfolio
 - Gather feedback

@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2023"],
+    "module": "ESNext",
+    "skipLibCheck": true,
+
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "isolatedModules": true,
+    "moduleDetection": "force",
+    "noEmit": true,
+
+    "strict": true,
+    "noFallthroughCasesInSwitch": true,
+    "types": ["node"]
+  },
+  // vitest.config.ts is intentionally excluded: vitest pins its own Vite
+  // version which conflicts with the root Vite's types. Vitest type-checks
+  // its own config internally when running.
+  "include": ["vite.config.ts"]
+}

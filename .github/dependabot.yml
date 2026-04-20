@@ -1,0 +1,46 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: '06:00'
+      timezone: Etc/UTC
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: chore
+      include: scope
+    labels:
+      - dependencies
+    groups:
+      radix-ui:
+        patterns:
+          - '@radix-ui/*'
+      mui:
+        patterns:
+          - '@mui/*'
+          - '@emotion/*'
+      types:
+        patterns:
+          - '@types/*'
+      linting:
+        patterns:
+          - 'eslint*'
+          - '@typescript-eslint/*'
+          - 'prettier*'
+      testing:
+        patterns:
+          - 'vitest*'
+          - '@testing-library/*'
+          - 'jsdom'
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    commit-message:
+      prefix: ci
+    labels:
+      - ci
+      - dependencies

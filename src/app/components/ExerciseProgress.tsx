@@ -2,8 +2,19 @@ import { useState, useEffect } from 'react';
 import { Card } from './ui/card';
 import { Button } from './ui/button';
 import { ArrowLeft, TrendingUp, Calendar } from 'lucide-react';
-import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { projectId, publicAnonKey } from '/utils/supabase/info';
+import {
+  LineChart,
+  Line,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from 'recharts';
+import { authedFetch } from '/utils/supabase/info';
 
 interface ExerciseProgressProps {
   exerciseName: string;
@@ -38,9 +49,6 @@ export function ExerciseProgress({ exerciseName, userId, onBack }: ExerciseProgr
   const [workoutHistory, setWorkoutHistory] = useState<WorkoutData[]>([]);
   const [loading, setLoading] = useState(true);
   const [chartData, setChartData] = useState<ChartDataPoint[]>([]);
-
-  const API_BASE = `https://${projectId}.supabase.co/functions/v1/make-server-56c079d7`;
-
   useEffect(() => {
     fetchExerciseHistory();
   }, [exerciseName, userId]);
@@ -48,11 +56,7 @@ export function ExerciseProgress({ exerciseName, userId, onBack }: ExerciseProgr
   const fetchExerciseHistory = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`${API_BASE}/workouts/${userId}`, {
-        headers: {
-          'Authorization': `Bearer ${publicAnonKey}`,
-        },
-      });
+      const response = await authedFetch(`/workouts/${userId}`);
 
       if (!response.ok) {
         console.error('API response not OK:', response.status, response.statusText);
@@ -61,7 +65,7 @@ export function ExerciseProgress({ exerciseName, userId, onBack }: ExerciseProgr
 
       const text = await response.text();
       console.log('Raw API response:', text);
-      
+
       let data;
       try {
         data = JSON.parse(text);
@@ -70,11 +74,11 @@ export function ExerciseProgress({ exerciseName, userId, onBack }: ExerciseProgr
         console.error('Response text:', text);
         throw new Error('Invalid JSON response from server');
       }
-      
+
       if (data.success && data.workouts) {
         // Filter workouts that contain this exercise
         const filtered = data.workouts.filter((workout: WorkoutData) =>
-          workout.exercises?.some((ex: { name: string }) => ex.name === exerciseName)
+          workout.exercises?.some((ex: { name: string }) => ex.name === exerciseName),
         );
 
         console.log(`Found ${filtered.length} workouts containing ${exerciseName}`);
@@ -91,32 +95,40 @@ export function ExerciseProgress({ exerciseName, userId, onBack }: ExerciseProgr
   };
 
   const processChartData = (workouts: WorkoutData[]) => {
-    const data: ChartDataPoint[] = workouts.map((workout) => {
-      const exercise = workout.exercises.find((ex) => ex.name === exerciseName);
-      
-      if (!exercise) {
+    const data: ChartDataPoint[] = workouts
+      .map((workout) => {
+        const exercise = workout.exercises.find((ex) => ex.name === exerciseName);
+
+        if (!exercise) {
+          return {
+            date: new Date(workout.date).toLocaleDateString('en-US', {
+              month: 'short',
+              day: 'numeric',
+            }),
+            maxWeight: 0,
+            totalVolume: 0,
+            totalReps: 0,
+            sets: 0,
+          };
+        }
+
+        const completedSets = exercise.sets.filter((set) => set.completed);
+        const maxWeight = Math.max(...completedSets.map((set) => set.weight), 0);
+        const totalVolume = completedSets.reduce((sum, set) => sum + set.weight * set.reps, 0);
+        const totalReps = completedSets.reduce((sum, set) => sum + set.reps, 0);
+
         return {
-          date: new Date(workout.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-          maxWeight: 0,
-          totalVolume: 0,
-          totalReps: 0,
-          sets: 0,
+          date: new Date(workout.date).toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+          }),
+          maxWeight,
+          totalVolume,
+          totalReps,
+          sets: completedSets.length,
         };
-      }
-
-      const completedSets = exercise.sets.filter((set) => set.completed);
-      const maxWeight = Math.max(...completedSets.map((set) => set.weight), 0);
-      const totalVolume = completedSets.reduce((sum, set) => sum + (set.weight * set.reps), 0);
-      const totalReps = completedSets.reduce((sum, set) => sum + set.reps, 0);
-
-      return {
-        date: new Date(workout.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-        maxWeight,
-        totalVolume,
-        totalReps,
-        sets: completedSets.length,
-      };
-    }).reverse(); // Most recent first
+      })
+      .reverse(); // Most recent first
 
     setChartData(data);
   };
@@ -124,9 +136,10 @@ export function ExerciseProgress({ exerciseName, userId, onBack }: ExerciseProgr
   const stats = {
     totalWorkouts: workoutHistory.length,
     maxWeightEver: Math.max(...chartData.map((d) => d.maxWeight), 0),
-    avgVolume: chartData.length > 0 
-      ? Math.round(chartData.reduce((sum, d) => sum + d.totalVolume, 0) / chartData.length)
-      : 0,
+    avgVolume:
+      chartData.length > 0
+        ? Math.round(chartData.reduce((sum, d) => sum + d.totalVolume, 0) / chartData.length)
+        : 0,
     totalVolume: chartData.reduce((sum, d) => sum + d.totalVolume, 0),
   };
 
@@ -198,29 +211,30 @@ export function ExerciseProgress({ exerciseName, userId, onBack }: ExerciseProgr
           <ResponsiveContainer width="100%" height={300}>
             <LineChart data={chartData}>
               <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-              <XAxis 
-                dataKey="date" 
+              <XAxis dataKey="date" stroke="#9ca3af" style={{ fontSize: '12px' }} />
+              <YAxis
                 stroke="#9ca3af"
                 style={{ fontSize: '12px' }}
+                label={{
+                  value: 'Weight (kg)',
+                  angle: -90,
+                  position: 'insideLeft',
+                  fill: '#9ca3af',
+                }}
               />
-              <YAxis 
-                stroke="#9ca3af"
-                style={{ fontSize: '12px' }}
-                label={{ value: 'Weight (kg)', angle: -90, position: 'insideLeft', fill: '#9ca3af' }}
-              />
-              <Tooltip 
-                contentStyle={{ 
-                  backgroundColor: '#1c1917', 
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: '#1c1917',
                   border: '1px solid #44403c',
                   borderRadius: '8px',
-                  color: '#fff'
+                  color: '#fff',
                 }}
               />
               <Legend />
-              <Line 
-                type="monotone" 
-                dataKey="maxWeight" 
-                stroke="#10b981" 
+              <Line
+                type="monotone"
+                dataKey="maxWeight"
+                stroke="#10b981"
                 strokeWidth={3}
                 name="Max Weight (kg)"
                 dot={{ fill: '#10b981', r: 5 }}
@@ -237,28 +251,29 @@ export function ExerciseProgress({ exerciseName, userId, onBack }: ExerciseProgr
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={chartData}>
               <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-              <XAxis 
-                dataKey="date" 
+              <XAxis dataKey="date" stroke="#9ca3af" style={{ fontSize: '12px' }} />
+              <YAxis
                 stroke="#9ca3af"
                 style={{ fontSize: '12px' }}
+                label={{
+                  value: 'Volume (kg)',
+                  angle: -90,
+                  position: 'insideLeft',
+                  fill: '#9ca3af',
+                }}
               />
-              <YAxis 
-                stroke="#9ca3af"
-                style={{ fontSize: '12px' }}
-                label={{ value: 'Volume (kg)', angle: -90, position: 'insideLeft', fill: '#9ca3af' }}
-              />
-              <Tooltip 
-                contentStyle={{ 
-                  backgroundColor: '#1c1917', 
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: '#1c1917',
                   border: '1px solid #44403c',
                   borderRadius: '8px',
-                  color: '#fff'
+                  color: '#fff',
                 }}
               />
               <Legend />
-              <Bar 
-                dataKey="totalVolume" 
-                fill="#8b5cf6" 
+              <Bar
+                dataKey="totalVolume"
+                fill="#8b5cf6"
                 name="Total Volume (kg)"
                 radius={[8, 8, 0, 0]}
               />
@@ -277,7 +292,7 @@ export function ExerciseProgress({ exerciseName, userId, onBack }: ExerciseProgr
             workoutHistory.map((workout) => {
               const exercise = workout.exercises.find((ex) => ex.name === exerciseName);
               const completedSets = exercise?.sets.filter((s) => s.completed) || [];
-              const volume = completedSets.reduce((sum, set) => sum + (set.weight * set.reps), 0);
+              const volume = completedSets.reduce((sum, set) => sum + set.weight * set.reps, 0);
               const maxWeight = Math.max(...completedSets.map((s) => s.weight), 0);
 
               return (

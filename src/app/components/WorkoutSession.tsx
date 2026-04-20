@@ -1,14 +1,33 @@
-import { useState, useEffect, useMemo } from "react";
-import { Button } from "./ui/button";
-import { Input } from "./ui/input";
-import { Card } from "./ui/card";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "./ui/dialog";
-import { Play, Pause, Check, Plus, Trash2, Clock, Dumbbell, TrendingUp, Search, ChevronDown, ChevronRight } from "lucide-react";
-import { EXERCISES, searchExercises, getExercisesByCategory, getExercisesByMuscleGroup } from "../data/exercises";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
-import { projectId, publicAnonKey } from '/utils/supabase/info';
+import { useState, useEffect, useMemo } from 'react';
+import { Button } from './ui/button';
+import { Input } from './ui/input';
+import { Card } from './ui/card';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from './ui/dialog';
+import {
+  Play,
+  Pause,
+  Check,
+  Plus,
+  Trash2,
+  Clock,
+  Dumbbell,
+  TrendingUp,
+  Search,
+  ChevronDown,
+  ChevronRight,
+} from 'lucide-react';
+import {
+  EXERCISES,
+  searchExercises,
+  getExercisesByCategory,
+  getExercisesByMuscleGroup,
+} from '../data/exercises';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
+import { authedFetch } from '/utils/supabase/info';
 
-interface Set {
+// Renamed from `Set` to avoid shadowing the built-in ES2015 `Set<T>` class
+// used below for `expandedGroups`.
+interface WorkoutSet {
   id: string;
   weight: number;
   reps: number;
@@ -19,7 +38,7 @@ interface Exercise {
   id: string;
   exerciseId: string;
   name: string;
-  sets: Set[];
+  sets: WorkoutSet[];
   notes?: string;
 }
 
@@ -32,17 +51,20 @@ export function WorkoutSession({ userId }: WorkoutSessionProps) {
   const [duration, setDuration] = useState(0);
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [isExercisePickerOpen, setIsExercisePickerOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState<'all' | 'strength' | 'cardio' | 'sports'>('all');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState<
+    'all' | 'strength' | 'cardio' | 'sports'
+  >('all');
   const [restTimer, setRestTimer] = useState(0);
   const [isResting, setIsResting] = useState(false);
   const [restDuration, setRestDuration] = useState(90);
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set(['chest']));
   const [showSuccessDialog, setShowSuccessDialog] = useState(false);
-  const [lastWorkoutStats, setLastWorkoutStats] = useState<{volume: number, sets: number, duration: number} | null>(null);
-
-  const API_BASE = `https://${projectId}.supabase.co/functions/v1/make-server-56c079d7`;
-
+  const [lastWorkoutStats, setLastWorkoutStats] = useState<{
+    volume: number;
+    sets: number;
+    duration: number;
+  } | null>(null);
   const toggleGroup = (group: string) => {
     const newExpanded = new Set(expandedGroups);
     if (newExpanded.has(group)) {
@@ -107,8 +129,8 @@ export function WorkoutSession({ userId }: WorkoutSessionProps) {
     };
     setExercises([...exercises, newExercise]);
     setIsExercisePickerOpen(false);
-    setSearchQuery("");
-    
+    setSearchQuery('');
+
     // Auto-start if first exercise
     if (exercises.length === 0) {
       setIsActive(true);
@@ -116,65 +138,76 @@ export function WorkoutSession({ userId }: WorkoutSessionProps) {
   };
 
   const removeExercise = (exerciseId: string) => {
-    setExercises(exercises.filter(ex => ex.id !== exerciseId));
+    setExercises(exercises.filter((ex) => ex.id !== exerciseId));
   };
 
   const addSet = (exerciseId: string) => {
-    setExercises(exercises.map(ex => {
-      if (ex.id === exerciseId) {
-        const newSet: Set = {
-          id: Date.now().toString(),
-          weight: 0,
-          reps: 0,
-          completed: false,
-        };
-        return { ...ex, sets: [...ex.sets, newSet] };
-      }
-      return ex;
-    }));
+    setExercises(
+      exercises.map((ex) => {
+        if (ex.id === exerciseId) {
+          const newSet: WorkoutSet = {
+            id: Date.now().toString(),
+            weight: 0,
+            reps: 0,
+            completed: false,
+          };
+          return { ...ex, sets: [...ex.sets, newSet] };
+        }
+        return ex;
+      }),
+    );
   };
 
-  const updateSet = (exerciseId: string, setId: string, field: 'weight' | 'reps', value: number) => {
-    setExercises(exercises.map(ex => {
-      if (ex.id === exerciseId) {
-        return {
-          ...ex,
-          sets: ex.sets.map(set => 
-            set.id === setId ? { ...set, [field]: value } : set
-          ),
-        };
-      }
-      return ex;
-    }));
+  const updateSet = (
+    exerciseId: string,
+    setId: string,
+    field: 'weight' | 'reps',
+    value: number,
+  ) => {
+    setExercises(
+      exercises.map((ex) => {
+        if (ex.id === exerciseId) {
+          return {
+            ...ex,
+            sets: ex.sets.map((set) => (set.id === setId ? { ...set, [field]: value } : set)),
+          };
+        }
+        return ex;
+      }),
+    );
   };
 
   const toggleSetComplete = (exerciseId: string, setId: string) => {
     console.log('=== TOGGLING SET COMPLETE ===');
     console.log('Exercise ID:', exerciseId);
     console.log('Set ID:', setId);
-    
-    setExercises(exercises.map(ex => {
-      if (ex.id === exerciseId) {
-        return {
-          ...ex,
-          sets: ex.sets.map(set => {
-            if (set.id === setId) {
-              const newCompleted = !set.completed;
-              console.log(`Set ${setId}: weight=${set.weight}, reps=${set.reps}, completed=${newCompleted}`);
-              
-              // Start rest timer when completing a set
-              if (newCompleted && !isResting) {
-                startRestTimer();
+
+    setExercises(
+      exercises.map((ex) => {
+        if (ex.id === exerciseId) {
+          return {
+            ...ex,
+            sets: ex.sets.map((set) => {
+              if (set.id === setId) {
+                const newCompleted = !set.completed;
+                console.log(
+                  `Set ${setId}: weight=${set.weight}, reps=${set.reps}, completed=${newCompleted}`,
+                );
+
+                // Start rest timer when completing a set
+                if (newCompleted && !isResting) {
+                  startRestTimer();
+                }
+                return { ...set, completed: newCompleted };
               }
-              return { ...set, completed: newCompleted };
-            }
-            return set;
-          }),
-        };
-      }
-      return ex;
-    }));
-    
+              return set;
+            }),
+          };
+        }
+        return ex;
+      }),
+    );
+
     // Force recalculate after state update
     setTimeout(() => {
       console.log('Current exercises after toggle:', exercises);
@@ -182,30 +215,37 @@ export function WorkoutSession({ userId }: WorkoutSessionProps) {
   };
 
   const removeSet = (exerciseId: string, setId: string) => {
-    setExercises(exercises.map(ex => {
-      if (ex.id === exerciseId) {
-        return { ...ex, sets: ex.sets.filter(set => set.id !== setId) };
-      }
-      return ex;
-    }));
+    setExercises(
+      exercises.map((ex) => {
+        if (ex.id === exerciseId) {
+          return { ...ex, sets: ex.sets.filter((set) => set.id !== setId) };
+        }
+        return ex;
+      }),
+    );
   };
 
   // Calculate total volume - recalculates whenever exercises change
   const totalVolume = useMemo(() => {
     console.log('=== RECALCULATING VOLUME ===');
     const volume = exercises.reduce((total, exercise) => {
-      return total + exercise.sets.reduce((exTotal, set) => {
-        if (set.completed) {
-          const weight = Number(set.weight) || 0;
-          const reps = Number(set.reps) || 0;
-          const setVolume = weight * reps;
-          console.log(`Set volume: ${weight}kg × ${reps} reps = ${setVolume}kg, completed=${set.completed}`);
-          return exTotal + setVolume;
-        }
-        return exTotal;
-      }, 0);
+      return (
+        total +
+        exercise.sets.reduce((exTotal, set) => {
+          if (set.completed) {
+            const weight = Number(set.weight) || 0;
+            const reps = Number(set.reps) || 0;
+            const setVolume = weight * reps;
+            console.log(
+              `Set volume: ${weight}kg × ${reps} reps = ${setVolume}kg, completed=${set.completed}`,
+            );
+            return exTotal + setVolume;
+          }
+          return exTotal;
+        }, 0)
+      );
     }, 0);
-    
+
     console.log('Total volume calculated:', volume);
     console.log('Number of exercises:', exercises.length);
     console.log('Exercises data:', JSON.stringify(exercises, null, 2));
@@ -223,8 +263,9 @@ export function WorkoutSession({ userId }: WorkoutSessionProps) {
     }
 
     const totalVolume = calculateTotalVolume();
-    const completedSets = exercises.reduce((total, ex) => 
-      total + ex.sets.filter(s => s.completed).length, 0
+    const completedSets = exercises.reduce(
+      (total, ex) => total + ex.sets.filter((s) => s.completed).length,
+      0,
     );
 
     const workout = {
@@ -245,12 +286,8 @@ export function WorkoutSession({ userId }: WorkoutSessionProps) {
     console.log('Full workout object:', JSON.stringify(workout, null, 2));
 
     try {
-      const response = await fetch(`${API_BASE}/workouts`, {
+      const response = await authedFetch(`/workouts`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${publicAnonKey}`,
-        },
         body: JSON.stringify(workout),
       });
 
@@ -259,7 +296,7 @@ export function WorkoutSession({ userId }: WorkoutSessionProps) {
       console.log('Response data:', data);
 
       if (data.success) {
-        setLastWorkoutStats({volume: totalVolume, sets: completedSets, duration});
+        setLastWorkoutStats({ volume: totalVolume, sets: completedSets, duration });
         setShowSuccessDialog(true);
         // Reset
         setExercises([]);
@@ -271,15 +308,16 @@ export function WorkoutSession({ userId }: WorkoutSessionProps) {
       }
     } catch (error) {
       console.error('Error saving workout:', error);
-      alert(`Error saving workout: ${error.message}\n\nCheck console for details.`);
+      const message = error instanceof Error ? error.message : String(error);
+      alert(`Error saving workout: ${message}\n\nCheck console for details.`);
     }
   };
 
   const filteredExercises = searchQuery
     ? searchExercises(searchQuery)
     : selectedCategory === 'all'
-    ? EXERCISES
-    : getExercisesByCategory(selectedCategory);
+      ? EXERCISES
+      : getExercisesByCategory(selectedCategory);
 
   // Group exercises by muscle group
   const muscleGroups = [
@@ -292,13 +330,15 @@ export function WorkoutSession({ userId }: WorkoutSessionProps) {
     { id: 'olympic', name: 'Olympic', icon: '🏆' },
   ];
 
-  const groupedExercises = muscleGroups.map(group => ({
-    ...group,
-    exercises: filteredExercises.filter(ex => ex.muscleGroup === group.id)
-  })).filter(group => group.exercises.length > 0);
+  const groupedExercises = muscleGroups
+    .map((group) => ({
+      ...group,
+      exercises: filteredExercises.filter((ex) => ex.muscleGroup === group.id),
+    }))
+    .filter((group) => group.exercises.length > 0);
 
-  const cardioExercises = filteredExercises.filter(ex => ex.category === 'cardio');
-  const sportsExercises = filteredExercises.filter(ex => ex.category === 'sports');
+  const cardioExercises = filteredExercises.filter((ex) => ex.category === 'cardio');
+  const sportsExercises = filteredExercises.filter((ex) => ex.category === 'sports');
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-6 space-y-6">
@@ -311,12 +351,14 @@ export function WorkoutSession({ userId }: WorkoutSessionProps) {
           </div>
           <div className="flex items-center gap-2">
             <Button
-              variant={isActive ? "default" : "outline"}
+              variant={isActive ? 'default' : 'outline'}
               onClick={() => setIsActive(!isActive)}
-              className={isActive ? "bg-red-500 hover:bg-red-600" : "border-emerald-500 text-emerald-500"}
+              className={
+                isActive ? 'bg-red-500 hover:bg-red-600' : 'border-emerald-500 text-emerald-500'
+              }
             >
               {isActive ? <Pause className="w-4 h-4 mr-2" /> : <Play className="w-4 h-4 mr-2" />}
-              {isActive ? "Pause" : "Start"}
+              {isActive ? 'Pause' : 'Start'}
             </Button>
           </div>
         </div>
@@ -391,15 +433,15 @@ export function WorkoutSession({ userId }: WorkoutSessionProps) {
                       : 'bg-stone-800'
                   }`}
                 >
-                  <span className="text-sm font-medium text-stone-400 w-8">
-                    {setIndex + 1}
-                  </span>
+                  <span className="text-sm font-medium text-stone-400 w-8">{setIndex + 1}</span>
                   <div>
                     <Input
                       type="number"
                       placeholder="Weight (kg)"
                       value={set.weight || ''}
-                      onChange={(e) => updateSet(exercise.id, set.id, 'weight', parseFloat(e.target.value) || 0)}
+                      onChange={(e) =>
+                        updateSet(exercise.id, set.id, 'weight', parseFloat(e.target.value) || 0)
+                      }
                       className="bg-stone-700 border-stone-600 text-white"
                       disabled={set.completed}
                     />
@@ -409,16 +451,20 @@ export function WorkoutSession({ userId }: WorkoutSessionProps) {
                       type="number"
                       placeholder="Reps"
                       value={set.reps || ''}
-                      onChange={(e) => updateSet(exercise.id, set.id, 'reps', parseInt(e.target.value) || 0)}
+                      onChange={(e) =>
+                        updateSet(exercise.id, set.id, 'reps', parseInt(e.target.value) || 0)
+                      }
                       className="bg-stone-700 border-stone-600 text-white"
                       disabled={set.completed}
                     />
                   </div>
                   <Button
                     size="icon"
-                    variant={set.completed ? "default" : "outline"}
+                    variant={set.completed ? 'default' : 'outline'}
                     onClick={() => toggleSetComplete(exercise.id, set.id)}
-                    className={set.completed ? "bg-emerald-500 hover:bg-emerald-600" : "border-stone-600"}
+                    className={
+                      set.completed ? 'bg-emerald-500 hover:bg-emerald-600' : 'border-stone-600'
+                    }
                   >
                     <Check className="w-4 h-4" />
                   </Button>
@@ -488,7 +534,11 @@ export function WorkoutSession({ userId }: WorkoutSessionProps) {
           </div>
 
           {/* Category Tabs */}
-          <Tabs value={selectedCategory} onValueChange={(v) => setSelectedCategory(v as any)} className="w-full">
+          <Tabs
+            value={selectedCategory}
+            onValueChange={(v) => setSelectedCategory(v as any)}
+            className="w-full"
+          >
             <TabsList className="w-full bg-stone-800">
               <TabsTrigger value="all">All</TabsTrigger>
               <TabsTrigger value="strength">Strength</TabsTrigger>
@@ -496,7 +546,10 @@ export function WorkoutSession({ userId }: WorkoutSessionProps) {
               <TabsTrigger value="sports">Sports</TabsTrigger>
             </TabsList>
 
-            <TabsContent value={selectedCategory} className="max-h-96 overflow-y-auto mt-4 space-y-3">
+            <TabsContent
+              value={selectedCategory}
+              className="max-h-96 overflow-y-auto mt-4 space-y-3"
+            >
               {/* Show search results if searching */}
               {searchQuery ? (
                 filteredExercises.length > 0 ? (
@@ -509,17 +562,23 @@ export function WorkoutSession({ userId }: WorkoutSessionProps) {
                       <p className="font-medium text-white">{exercise.name}</p>
                       <div className="flex items-center gap-2 mt-1">
                         {exercise.muscleGroup && (
-                          <span className="text-xs text-emerald-400 capitalize">{exercise.muscleGroup}</span>
+                          <span className="text-xs text-emerald-400 capitalize">
+                            {exercise.muscleGroup}
+                          </span>
                         )}
                         {exercise.equipment && (
                           <span className="text-xs text-stone-400">• {exercise.equipment}</span>
                         )}
                         {exercise.difficulty && (
-                          <span className={`text-xs capitalize ${
-                            exercise.difficulty === 'beginner' ? 'text-green-400' :
-                            exercise.difficulty === 'intermediate' ? 'text-yellow-400' :
-                            'text-red-400'
-                          }`}>
+                          <span
+                            className={`text-xs capitalize ${
+                              exercise.difficulty === 'beginner'
+                                ? 'text-green-400'
+                                : exercise.difficulty === 'intermediate'
+                                  ? 'text-yellow-400'
+                                  : 'text-red-400'
+                            }`}
+                          >
                             {exercise.difficulty}
                           </span>
                         )}
@@ -535,7 +594,10 @@ export function WorkoutSession({ userId }: WorkoutSessionProps) {
                   {(selectedCategory === 'all' || selectedCategory === 'strength') && (
                     <>
                       {groupedExercises.map((group) => (
-                        <div key={group.id} className="border border-stone-700 rounded-lg overflow-hidden">
+                        <div
+                          key={group.id}
+                          className="border border-stone-700 rounded-lg overflow-hidden"
+                        >
                           <button
                             onClick={() => toggleGroup(group.id)}
                             className="w-full flex items-center justify-between p-4 bg-stone-800 hover:bg-stone-750 transition-colors"
@@ -544,7 +606,9 @@ export function WorkoutSession({ userId }: WorkoutSessionProps) {
                               <span className="text-2xl">{group.icon}</span>
                               <div className="text-left">
                                 <h3 className="font-semibold text-white">{group.name}</h3>
-                                <p className="text-xs text-stone-400">{group.exercises.length} exercises</p>
+                                <p className="text-xs text-stone-400">
+                                  {group.exercises.length} exercises
+                                </p>
                               </div>
                             </div>
                             {expandedGroups.has(group.id) ? (
@@ -553,7 +617,7 @@ export function WorkoutSession({ userId }: WorkoutSessionProps) {
                               <ChevronRight className="w-5 h-5 text-stone-400" />
                             )}
                           </button>
-                          
+
                           {expandedGroups.has(group.id) && (
                             <div className="bg-stone-850 divide-y divide-stone-700">
                               {group.exercises.map((exercise) => (
@@ -565,14 +629,20 @@ export function WorkoutSession({ userId }: WorkoutSessionProps) {
                                   <p className="font-medium text-white">{exercise.name}</p>
                                   <div className="flex items-center gap-2 mt-1">
                                     {exercise.equipment && (
-                                      <span className="text-xs text-stone-400">{exercise.equipment}</span>
+                                      <span className="text-xs text-stone-400">
+                                        {exercise.equipment}
+                                      </span>
                                     )}
                                     {exercise.difficulty && (
-                                      <span className={`text-xs capitalize ${
-                                        exercise.difficulty === 'beginner' ? 'text-green-400' :
-                                        exercise.difficulty === 'intermediate' ? 'text-yellow-400' :
-                                        'text-red-400'
-                                      }`}>
+                                      <span
+                                        className={`text-xs capitalize ${
+                                          exercise.difficulty === 'beginner'
+                                            ? 'text-green-400'
+                                            : exercise.difficulty === 'intermediate'
+                                              ? 'text-yellow-400'
+                                              : 'text-red-400'
+                                        }`}
+                                      >
                                         • {exercise.difficulty}
                                       </span>
                                     )}
@@ -587,91 +657,103 @@ export function WorkoutSession({ userId }: WorkoutSessionProps) {
                   )}
 
                   {/* Cardio Exercises */}
-                  {(selectedCategory === 'all' || selectedCategory === 'cardio') && cardioExercises.length > 0 && (
-                    <div className="border border-stone-700 rounded-lg overflow-hidden">
-                      <button
-                        onClick={() => toggleGroup('cardio')}
-                        className="w-full flex items-center justify-between p-4 bg-stone-800 hover:bg-stone-750 transition-colors"
-                      >
-                        <div className="flex items-center gap-3">
-                          <span className="text-2xl">🏃</span>
-                          <div className="text-left">
-                            <h3 className="font-semibold text-white">Cardio</h3>
-                            <p className="text-xs text-stone-400">{cardioExercises.length} exercises</p>
+                  {(selectedCategory === 'all' || selectedCategory === 'cardio') &&
+                    cardioExercises.length > 0 && (
+                      <div className="border border-stone-700 rounded-lg overflow-hidden">
+                        <button
+                          onClick={() => toggleGroup('cardio')}
+                          className="w-full flex items-center justify-between p-4 bg-stone-800 hover:bg-stone-750 transition-colors"
+                        >
+                          <div className="flex items-center gap-3">
+                            <span className="text-2xl">🏃</span>
+                            <div className="text-left">
+                              <h3 className="font-semibold text-white">Cardio</h3>
+                              <p className="text-xs text-stone-400">
+                                {cardioExercises.length} exercises
+                              </p>
+                            </div>
                           </div>
-                        </div>
-                        {expandedGroups.has('cardio') ? (
-                          <ChevronDown className="w-5 h-5 text-stone-400" />
-                        ) : (
-                          <ChevronRight className="w-5 h-5 text-stone-400" />
+                          {expandedGroups.has('cardio') ? (
+                            <ChevronDown className="w-5 h-5 text-stone-400" />
+                          ) : (
+                            <ChevronRight className="w-5 h-5 text-stone-400" />
+                          )}
+                        </button>
+
+                        {expandedGroups.has('cardio') && (
+                          <div className="bg-stone-850 divide-y divide-stone-700">
+                            {cardioExercises.map((exercise) => (
+                              <button
+                                key={exercise.id}
+                                onClick={() => addExercise(exercise.id, exercise.name)}
+                                className="w-full text-left p-4 hover:bg-stone-700 transition-colors"
+                              >
+                                <p className="font-medium text-white">{exercise.name}</p>
+                                <div className="flex items-center gap-2 mt-1">
+                                  {exercise.equipment && (
+                                    <span className="text-xs text-stone-400">
+                                      {exercise.equipment}
+                                    </span>
+                                  )}
+                                  {exercise.cardioType && (
+                                    <span className="text-xs text-blue-400 capitalize">
+                                      • {exercise.cardioType}
+                                    </span>
+                                  )}
+                                </div>
+                              </button>
+                            ))}
+                          </div>
                         )}
-                      </button>
-                      
-                      {expandedGroups.has('cardio') && (
-                        <div className="bg-stone-850 divide-y divide-stone-700">
-                          {cardioExercises.map((exercise) => (
-                            <button
-                              key={exercise.id}
-                              onClick={() => addExercise(exercise.id, exercise.name)}
-                              className="w-full text-left p-4 hover:bg-stone-700 transition-colors"
-                            >
-                              <p className="font-medium text-white">{exercise.name}</p>
-                              <div className="flex items-center gap-2 mt-1">
-                                {exercise.equipment && (
-                                  <span className="text-xs text-stone-400">{exercise.equipment}</span>
-                                )}
-                                {exercise.cardioType && (
-                                  <span className="text-xs text-blue-400 capitalize">• {exercise.cardioType}</span>
-                                )}
-                              </div>
-                            </button>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  )}
+                      </div>
+                    )}
 
                   {/* Sports & Activities */}
-                  {(selectedCategory === 'all' || selectedCategory === 'sports') && sportsExercises.length > 0 && (
-                    <div className="border border-stone-700 rounded-lg overflow-hidden">
-                      <button
-                        onClick={() => toggleGroup('sports')}
-                        className="w-full flex items-center justify-between p-4 bg-stone-800 hover:bg-stone-750 transition-colors"
-                      >
-                        <div className="flex items-center gap-3">
-                          <span className="text-2xl">⚽</span>
-                          <div className="text-left">
-                            <h3 className="font-semibold text-white">Sports & Activities</h3>
-                            <p className="text-xs text-stone-400">{sportsExercises.length} exercises</p>
+                  {(selectedCategory === 'all' || selectedCategory === 'sports') &&
+                    sportsExercises.length > 0 && (
+                      <div className="border border-stone-700 rounded-lg overflow-hidden">
+                        <button
+                          onClick={() => toggleGroup('sports')}
+                          className="w-full flex items-center justify-between p-4 bg-stone-800 hover:bg-stone-750 transition-colors"
+                        >
+                          <div className="flex items-center gap-3">
+                            <span className="text-2xl">⚽</span>
+                            <div className="text-left">
+                              <h3 className="font-semibold text-white">Sports & Activities</h3>
+                              <p className="text-xs text-stone-400">
+                                {sportsExercises.length} exercises
+                              </p>
+                            </div>
                           </div>
-                        </div>
-                        {expandedGroups.has('sports') ? (
-                          <ChevronDown className="w-5 h-5 text-stone-400" />
-                        ) : (
-                          <ChevronRight className="w-5 h-5 text-stone-400" />
+                          {expandedGroups.has('sports') ? (
+                            <ChevronDown className="w-5 h-5 text-stone-400" />
+                          ) : (
+                            <ChevronRight className="w-5 h-5 text-stone-400" />
+                          )}
+                        </button>
+
+                        {expandedGroups.has('sports') && (
+                          <div className="bg-stone-850 divide-y divide-stone-700">
+                            {sportsExercises.map((exercise) => (
+                              <button
+                                key={exercise.id}
+                                onClick={() => addExercise(exercise.id, exercise.name)}
+                                className="w-full text-left p-4 hover:bg-stone-700 transition-colors"
+                              >
+                                <p className="font-medium text-white">{exercise.name}</p>
+                                <div className="flex items-center gap-2 mt-1">
+                                  {exercise.equipment && (
+                                    <span className="text-xs text-stone-400">
+                                      {exercise.equipment}
+                                    </span>
+                                  )}
+                                </div>
+                              </button>
+                            ))}
+                          </div>
                         )}
-                      </button>
-                      
-                      {expandedGroups.has('sports') && (
-                        <div className="bg-stone-850 divide-y divide-stone-700">
-                          {sportsExercises.map((exercise) => (
-                            <button
-                              key={exercise.id}
-                              onClick={() => addExercise(exercise.id, exercise.name)}
-                              className="w-full text-left p-4 hover:bg-stone-700 transition-colors"
-                            >
-                              <p className="font-medium text-white">{exercise.name}</p>
-                              <div className="flex items-center gap-2 mt-1">
-                                {exercise.equipment && (
-                                  <span className="text-xs text-stone-400">{exercise.equipment}</span>
-                                )}
-                              </div>
-                            </button>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  )}
+                      </div>
+                    )}
                 </>
               )}
             </TabsContent>
@@ -702,7 +784,8 @@ export function WorkoutSession({ userId }: WorkoutSessionProps) {
               <div className="text-center p-4 bg-stone-800 rounded-lg">
                 <Clock className="w-5 h-5 text-emerald-500 mx-auto mb-2" />
                 <p className="text-xl font-bold text-white">
-                  {Math.floor((lastWorkoutStats?.duration || 0) / 60)}:{String((lastWorkoutStats?.duration || 0) % 60).padStart(2, '0')}
+                  {Math.floor((lastWorkoutStats?.duration || 0) / 60)}:
+                  {String((lastWorkoutStats?.duration || 0) % 60).padStart(2, '0')}
                 </p>
                 <p className="text-xs text-stone-400">Duration</p>
               </div>
@@ -713,7 +796,9 @@ export function WorkoutSession({ userId }: WorkoutSessionProps) {
               </div>
               <div className="text-center p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-lg">
                 <TrendingUp className="w-5 h-5 text-emerald-500 mx-auto mb-2" />
-                <p className="text-xl font-bold text-emerald-400">{lastWorkoutStats?.volume || 0}kg</p>
+                <p className="text-xl font-bold text-emerald-400">
+                  {lastWorkoutStats?.volume || 0}kg
+                </p>
                 <p className="text-xs text-emerald-400">Volume</p>
               </div>
             </div>
